@@ -8,7 +8,6 @@ ROOT=$1
 OLD_PWD=$2
 NEW_PWD=$3
 for f in $(find $ROOT -name "*.d"); do
-    echo "   fixing $f"
     $SCRIPT_DIR/reloc.pl $NEW_PWD $OLD_PWD $f > $f.tmp || {
         echo "Error relocating $f!"
         # If there was an error in processing then file then

@@ -20,6 +20,8 @@ my $old_root = shift;
 my $file     = shift;
 # Open the .d file that we will process
 open f, $file or die $!;
+# Pring "fixing <path>" in purple
+print STDERR "   \033[35mfixing\033[00m " . File::Spec->abs2rel($file, $new_root) . "\n";
 # Loop over the lines in the file
 while (<f>) {
     # If we have a blank line then just echo it and skip to next line
