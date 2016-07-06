@@ -3,6 +3,8 @@
 
 .DELETE_ON_ERROR:
 
+.SECONDEXPANSION:
+
 SHELL = /bin/bash
 
 CC  ?= gcc

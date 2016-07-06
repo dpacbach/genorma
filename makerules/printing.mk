@@ -17,13 +17,12 @@ remove_ticks   := 's/`//; s/'\''//'
 ifdef V
     at :=
     print_rule :=
-    colorize_clean :=
 else
     at := @
     print_rule = @echo -e '$1' &&
-    colorize_clean := | sed -r $(remove_ticks) | sed -r $(removed_red)
 endif
 
 print_compile = $(call print_rule,$(c_green)compiling$(c_norm) $<)
 print_link    = $(call print_rule,  $(c_cyan)linking$(c_norm) $@)
 print_run     = $(call print_rule,  running $@)
+print_remove  = $(call print_rule, $(c_red)removing$(c_norm) $*)

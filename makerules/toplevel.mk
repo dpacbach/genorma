@@ -37,8 +37,16 @@ include $(CWD)/makefile
 #all: $(BINARIES)
 #.DEFAULT_GOAL := all
 
-clean:
-	$(at)-rm -f $(if $(at),-v ,)$(OBJS) $(BINARIES) $(DEPS) $(colorize_clean)
-	@-rm -f $(location_file)
+clean_targets = $(OBJS) $(BINARIES) $(DEPS)
+
+# Use secondary expansion for the dependencies here because we won't yet know
+# the contents of clean_targets at this point.  Also, use wildcard so that we
+# only run remove commands for those which exist.
+clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
+	$(at)-rm -f $(location_file)
+
+# Do one target per removed file for ease of printing output.
+%.clean:
+	$(print_remove) rm -f $*
 
 .PHONY: all clean
