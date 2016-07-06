@@ -7,6 +7,7 @@ expand_deps_1    = $(call map,first_level_deps,$1)
 expand_deps_full = $1 $(call map,expand_deps_full,$(call expand_deps_1,$1))
 # Now just remove redundencies.
 all_deps         = $(call uniq,$(call expand_deps_full,$1))
+all_deps_noself  = $(filter-out $1,$(call uniq,$(call expand_deps_full,$1)))
 
 ###############################################################################
 # Include dependencies
@@ -21,4 +22,4 @@ include_flags = $(call map,include_flag,$(call all_deps,$1))
 # Linking dependencies
 ###############################################################################
 # List only direct dependencies (not including self) and retrieve binary
-link_binaries = $(foreach i,$(call expand_deps_1,$1),$($(i)_BINARY))
+link_binaries = $(foreach i,$(call all_deps_noself,$1),$($(i)_BINARY))
