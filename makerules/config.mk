@@ -19,9 +19,11 @@ endif
 
 ifeq ($(OS),OSX)
     CFLAGS += -DOS_OSX
+    SO_EXT := dylib
     bin_platform = osx
 else
     CFLAGS += -DOS_LINUX
+    SO_EXT := so
     CFLAGS_DEBUG += -gstabs
     bin_platform = linux64
 endif
