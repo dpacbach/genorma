@@ -52,7 +52,7 @@ clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 bin_folder = $(TOPLEVELWD)bin-$(bin_platform)
 
 $(bin_folder):
-	mkdir $(bin_folder)
+	$(print_mkdir) mkdir $(bin_folder)
 
 project_file := $(TOPLEVELWD)project.mk
 include $(project_file)
