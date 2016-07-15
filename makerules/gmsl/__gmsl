@@ -59,7 +59,9 @@ endif
 ifdef GMSL_NO_ERRORS
 __gmsl_error :=
 else
- __gmsl_error = $(if $1,$(error $(__gmsl_name): $1))
+# __gmsl_error = $(if $1,$(error $(__gmsl_name): $1))
+# Removed __gmsl_name -- David Sicilia
+ __gmsl_error = $(if $1,$(error $1))
 endif
 
 # If GMSL_TRACE is enabled then calls to the library functions are
