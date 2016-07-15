@@ -51,6 +51,8 @@ compile_srcs_so  = $(eval $(call _compile_srcs,CFLAGS_LIB))
 ################################################################################
 # Linking binary
 ################################################################################
+# In this function we use a hack to determine if we're linking an SO verses exe,
+# and that is to check for the presence of a second parameter.
 define _link
 
     OUT_NAME := $1
@@ -64,6 +66,10 @@ define _link
     BINARIES    := $(BINARIES)    $$($(LOCATION)_BINARY)
     EXECUTABLES := $(EXECUTABLES) $$(if $2,,$$($(LOCATION)_BINARY))
 
+    SONAME := -Wl,-soname,$$(OUT_NAME)
+    # Clear this string if we're not building an SO
+    SONAME_$(LOCATION) := $$(if $2,$$(SONAME),)
+
     # Note that in the rule below we are adding the project
     # file as an explicit dependency so as to cause all files
     # to be rebuilt if it changes (because usually changes to
@@ -73,7 +79,7 @@ define _link
     # it out in the rule.
     $(relCWD)$$(OUT_NAME): $(project_file)
     $(relCWD)$$(OUT_NAME): $$(NEW_OBJS) $(call link_binaries,$(LOCATION))
-	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $(TP_LINK_$(LOCATION)) $$(call keep_link_files,$$^) -o $$@
+	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $(TP_LINK_$(LOCATION)) $$(SONAME_$(LOCATION)) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) -o $$@
 
 endef
 
