@@ -8,7 +8,41 @@ location_vars = $(call keep_if,is_location,$(.VARIABLES))
 all_locations = $(patsubst LOCATION_%,%,$(location_vars))
 
 #####################################################################
-# Make sure all variables are defined that need to be
+# Make sure all variables are defined that need to be (but note that
+# they could be empty).
 
 must_be_defined = CFLAGS CXXFLAGS LD LDFLAGS
 $(call map,assert_defined,$(must_be_defined))
+
+# Make sure all variables are non-empty that need to be
+must_be_nonempty = bin_folder
+$(call map,assert_nonempty,$(must_be_nonempty))
+
+# Here we get a list of all the file names of all binaries (which
+# does not include object files) and assert that there are no
+# duplicates.  There should not be duplicates because we might want
+# to copy them all into the same top-level folder.
+__files := $(call map,notdir,$(BINARIES))
+bin_dup = duplicate file name in list of binaries!
+$(call assert,$(call leq,$(__files),$(call uniq,$(__files))),$(bin_dup))
+
+#####################################################################
+# Handling of binaries and binary folder.  We do this here because
+# we don't know the contents of the BINARIES variable until here.
+not_bin_err = you must call to_bin_folder on something that is in \
+              the BINARIES list!  $1 is not...
+assert_is_bin = $(call assert,$(strip $(filter $1,$(BINARIES))),$(call not_bin_err,$1))
+to_bin_folder = $(call assert_is_bin,$1)$(bin_folder)/$(notdir $1)
+
+define bin_copy_rule_impl
+    $(call to_bin_folder,$1): $1 | $(bin_folder)
+	    $(print_copy_) cp -f $1 $$@
+endef
+bin_copy_rule = $(eval $(call bin_copy_rule_impl,$1))
+# Create a bin_copy rule for each binary.
+$(call map,bin_copy_rule,$(BINARIES))
+
+# If run as a target this will build and copy all binaries.
+copy-bin: $(call map,to_bin_folder,$(BINARIES))
+
+.PHONY: copy-bin
