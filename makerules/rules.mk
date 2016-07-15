@@ -66,7 +66,7 @@ define _link
     BINARIES    := $(BINARIES)    $$($(LOCATION)_BINARY)
     EXECUTABLES := $(EXECUTABLES) $$(if $2,,$$($(LOCATION)_BINARY))
 
-    SONAME := -Wl,-soname,$$(OUT_NAME)
+    SONAME := $(soname_ld_option_prefix)$$(OUT_NAME)
     # Clear this string if we're not building an SO
     SONAME_$(LOCATION) := $$(if $2,$$(SONAME),)
 
