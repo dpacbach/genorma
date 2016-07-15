@@ -49,4 +49,7 @@ clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 %.clean:
 	$(print_remove) rm -f $*
 
+project_file := $(TOPLEVELWD)project.mk
+include $(project_file)
+
 .PHONY: all clean

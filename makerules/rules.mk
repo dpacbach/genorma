@@ -27,16 +27,22 @@ define _compile_srcs
 
     -include $$(NEW_DEPS)
 
-    # Here we put a static pattern rule otherwise when
-    # we run make out of the folder containing this make
-    # file the relCWD will be empty and so the pattern
-    # would match any object file and cause this rule
-    # to be used to compile files in other folders which
-    # is not correct.
+    # Here we put a static pattern rule otherwise when we run
+    # make out of the folder containing this make file the
+    # relCWD will be empty and so the pattern would match any
+    # object file and cause this rule to be used to compile
+    # files in other folders which is not correct.
     #
-    # Note that the evaluation
+    # Note that in the rule below we are adding the project
+    # file as an explicit dependency so as to cause all files
+    # to be rebuilt if it changes (because usually changes to
+    # this file would change a compiler flag or add a dependency
+    # which would not otherwise trigger rebuilding.  We assume
+    # that this file ends in a .mk extension and then filter
+    # it out in the rule.
+    $$(NEW_OBJS): $(project_file)
     $$(NEW_OBJS): $(relCWD)%.o: $(relCWD)%.cpp
-	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
+	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$(call keep_cpp_srcs,$$^) -o $$@
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
@@ -58,8 +64,16 @@ define _link
     BINARIES    := $(BINARIES)    $$($(LOCATION)_BINARY)
     EXECUTABLES := $(EXECUTABLES) $$(if $2,,$$($(LOCATION)_BINARY))
 
+    # Note that in the rule below we are adding the project
+    # file as an explicit dependency so as to cause all files
+    # to be rebuilt if it changes (because usually changes to
+    # this file would change a compiler flag or add a dependency
+    # which would not otherwise trigger rebuilding.  We assume
+    # that this file ends in a .mk extension and then filter
+    # it out in the rule.
+    $(relCWD)$$(OUT_NAME): $(project_file)
     $(relCWD)$$(OUT_NAME): $$(NEW_OBJS) $(call link_binaries,$(LOCATION))
-	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $(TP_LINK_$(LOCATION)) $$^ -o $$@
+	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $(TP_LINK_$(LOCATION)) $$(call keep_link_files,$$^) -o $$@
 
 endef
 
