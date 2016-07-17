@@ -41,8 +41,3 @@ endef
 bin_copy_rule = $(eval $(call bin_copy_rule_impl,$1))
 # Create a bin_copy rule for each binary.
 $(call map,bin_copy_rule,$(BINARIES))
-
-# If run as a target this will build and copy all binaries.
-copy-bin: $(call map,to_bin_folder,$(BINARIES))
-
-.PHONY: copy-bin

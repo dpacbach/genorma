@@ -34,8 +34,16 @@ include $(CWD)/makefile
 
 ################################################################################
 # Standard top-level targets
-#all: $(BINARIES)
-#.DEFAULT_GOAL := all
+build: $$(BINARIES)
+# If run as a target this will build and copy all binaries.
+copy-bin: $$(call map,to_bin_folder,$$(BINARIES))
+# Does everything
+all: copy-bin
+
+.DEFAULT_GOAL = all
+
+.PHONY: all build copy-bin
+
 
 clean_targets = $(OBJS) $(BINARIES) $(DEPS)
 
@@ -49,6 +57,8 @@ clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 %.clean:
 	$(print_remove) rm -f $*
 
+.PHONY: clean
+
 bin_folder = $(TOPLEVELWD)bin-$(bin_platform)
 
 $(bin_folder):
@@ -56,5 +66,3 @@ $(bin_folder):
 
 project_file := $(TOPLEVELWD)project.mk
 include $(project_file)
-
-.PHONY: all clean
