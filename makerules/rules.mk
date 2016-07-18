@@ -17,12 +17,15 @@ set_location = $(eval $(call _set_location,$1))
 ################################################################################
 define _compile_srcs
 
-    NEW_C_SRCS  := $(wildcard $(relCWD)*.cpp)
-    NEW_OBJS    := $$(NEW_C_SRCS:.cpp=.o)
-    NEW_DEPS    := $$(NEW_C_SRCS:.cpp=.d)
+    NEW_C_SRCS   := $(wildcard $(relCWD)*.c)
+    NEW_CPP_SRCS := $(wildcard $(relCWD)*.cpp)
+    NEW_OBJS_C   := $$(NEW_C_SRCS:.c=.o)
+    NEW_OBJS_CPP := $$(NEW_CPP_SRCS:.cpp=.o)
+    # For deps we don't need to distinguish between c/cpp
+    NEW_DEPS     := $$(NEW_C_SRCS:.c=.d) $$(NEW_CPP_SRCS:.cpp=.d)
 
-    C_SRCS      := $(C_SRCS) $$(NEW_C_SRCS)
-    OBJS        := $(OBJS)   $$(NEW_OBJS)
+    C_SRCS      := $(C_SRCS) $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
+    OBJS        := $(OBJS)   $$(NEW_OBJS_C) $$(NEW_OBJS_CPP)
     DEPS        := $(DEPS)   $$(NEW_DEPS)
 
     -include $$(NEW_DEPS)
@@ -40,9 +43,13 @@ define _compile_srcs
     # which would not otherwise trigger rebuilding.  We assume
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
-    $$(NEW_OBJS): $(project_file)
-    $$(NEW_OBJS): $(relCWD)%.o: $(relCWD)%.cpp
-	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$(call keep_cpp_srcs,$$^) -o $$@
+    $$(NEW_OBJS_C): $(project_file)
+    $$(NEW_OBJS_C): $(relCWD)%.o: $(relCWD)%.c
+	    $$(print_compile) $$(CC)  $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$(call keep_cpp_srcs,$$^) -o $$@
+
+    $$(NEW_OBJS_CPP): $(project_file)
+    $$(NEW_OBJS_CPP): $(relCWD)%.o: $(relCWD)%.cpp
+	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$(call keep_cpp_srcs,$$^) -o $$@
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
@@ -60,8 +67,9 @@ define _link
     $(LOCATION)_BINARY       := $(relCWD)$$(OUT_NAME)
     DEFAULT_GOAL_$(LOCATION) := $$($(LOCATION)_BINARY)
 
-    NEW_C_SRCS  := $(wildcard $(relCWD)*.cpp)
+    NEW_C_SRCS  := $(wildcard $(relCWD)*.c $(relCWD)*.cpp)
     NEW_OBJS    := $$(NEW_C_SRCS:.cpp=.o)
+    NEW_OBJS    := $$(NEW_OBJS:.c=.o)
 
     BINARIES    := $(BINARIES)    $$($(LOCATION)_BINARY)
     EXECUTABLES := $(EXECUTABLES) $$(if $2,,$$($(LOCATION)_BINARY))
