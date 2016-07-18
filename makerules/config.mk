@@ -21,7 +21,7 @@ ifeq ($(OS),OSX)
     CFLAGS += -DOS_OSX
     SO_EXT := dylib
     bin_platform = osx
-    soname_ld_option_prefix = -Wl,-install_name,@executable_path/
+    soname_ld_option_prefix = -Wl,-install_name,@loader_path/
 else
     CFLAGS += -DOS_LINUX
     SO_EXT := so
