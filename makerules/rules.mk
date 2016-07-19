@@ -87,7 +87,7 @@ define _link
     # it out in the rule.
     $(relCWD)$$(OUT_NAME): $(project_file)
     $(relCWD)$$(OUT_NAME): $$(NEW_OBJS) $(call link_binaries,$(LOCATION))
-	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $(TP_LINK_$(LOCATION)) $$(SONAME_$(LOCATION)) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) -o $$@
+	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $$(SONAME_$(LOCATION)) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_$(LOCATION)) -o $$@
 
 endef
 
