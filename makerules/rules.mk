@@ -54,8 +54,8 @@ define _compile_srcs
     $$(NEW_L_SRCS_CPP): $(relCWD)%.l.cpp: $(relCWD)%.l
 	    $$(print_flex) flex --posix -s -o $$@ -c $$<
     ifeq ($(OS),Linux)
-	    sed -i .tmp 's/yy_size_t yy_buf_size/int yy_buf_size/' $$@
-	    rm $$@.tmp
+	    @sed -i.tmp 's/yy_size_t yy_buf_size/int yy_buf_size/' $$@
+	    @rm $$@.tmp
     endif
     # We cannot compile the flex-generated cpp until bison
     # runs and generates the hpp file.  It seems easiest to
@@ -67,7 +67,7 @@ define _compile_srcs
 
     $$(NEW_Y_SRCS_CPP): $(project_file)
     $$(NEW_Y_SRCS_CPP): $(relCWD)%.y.cpp: $(relCWD)%.y
-	    $$(print_bison) bison -d -o $$@ $$<
+	    $$(print_bison) bison -Wno-deprecated -d -o $$@ $$<
 
     # Here we put a static pattern rule otherwise when we run
     # make out of the folder containing this make file the
