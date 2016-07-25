@@ -17,18 +17,57 @@ set_location = $(eval $(call _set_location,$1))
 ################################################################################
 define _compile_srcs
 
+    NEW_L_SRCS     := $(wildcard $(relCWD)*.l)
+    NEW_Y_SRCS     := $(wildcard $(relCWD)*.y)
+
+    NEW_L_SRCS_CPP := $$(NEW_L_SRCS:.l=.l.cpp)
+    NEW_Y_SRCS_CPP := $$(NEW_Y_SRCS:.y=.y.cpp)
+    NEW_Y_SRCS_HPP := $$(NEW_Y_SRCS:.y=.y.hpp)
+
+    NEW_L_SRCS_OBJ := $$(NEW_L_SRCS:.l=.l.o)
+
     NEW_C_SRCS   := $(wildcard $(relCWD)*.c)
-    NEW_CPP_SRCS := $(wildcard $(relCWD)*.cpp)
+    NEW_CPP_SRCS := $(wildcard $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
+
+    # It is possible that the cpp sources may contain duplicates if
+    # a flex/bison generated cpp file is already in the directory.
+    NEW_CPP_SRCS := $$(call uniq,$$(NEW_CPP_SRCS))
+
     NEW_OBJS_C   := $$(NEW_C_SRCS:.c=.o)
     NEW_OBJS_CPP := $$(NEW_CPP_SRCS:.cpp=.o)
+
     # For deps we don't need to distinguish between c/cpp
     NEW_DEPS     := $$(NEW_C_SRCS:.c=.d) $$(NEW_CPP_SRCS:.cpp=.d)
 
-    C_SRCS      := $(C_SRCS) $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
-    OBJS        := $(OBJS)   $$(NEW_OBJS_C) $$(NEW_OBJS_CPP)
-    DEPS        := $(DEPS)   $$(NEW_DEPS)
+    C_SRCS      := $(C_SRCS)  $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
+    YL_SRCS     := $(YL_SRCS) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP) $$(NEW_Y_SRCS_HPP)
+    OBJS        := $(OBJS)    $$(NEW_OBJS_C) $$(NEW_OBJS_CPP)
+    DEPS        := $(DEPS)    $$(NEW_DEPS)
 
     -include $$(NEW_DEPS)
+
+    # Rule for running flex on a .l file.  The `sed` step is
+    # to make a change that suppresses a warning.  This is
+    # supposed to be corrected in more recent versions of flex,
+    # so should probably be removed eventually.
+    $$(NEW_L_SRCS_CPP): $(project_file)
+    $$(NEW_L_SRCS_CPP): $(relCWD)%.l.cpp: $(relCWD)%.l
+	    $$(print_flex) flex --posix -s -o $$@ -c $$<
+    ifeq ($(OS),Linux)
+	    sed -i .tmp 's/yy_size_t yy_buf_size/int yy_buf_size/' $$@
+	    rm $$@.tmp
+    endif
+    # We cannot compile the flex-generated cpp until bison
+    # runs and generates the hpp file.  It seems easiest to
+    # to state this dependency to make using the cpp file.
+    # Technically this is not exact, but seems fine since
+    # the bison cpp and hpp files should go out of date
+    # or become up to date together in normal usage.
+    $$(NEW_L_SRCS_OBJ): $(relCWD)%.l.o: $(relCWD)%.y.cpp
+
+    $$(NEW_Y_SRCS_CPP): $(project_file)
+    $$(NEW_Y_SRCS_CPP): $(relCWD)%.y.cpp: $(relCWD)%.y
+	    $$(print_bison) bison -d -o $$@ $$<
 
     # Here we put a static pattern rule otherwise when we run
     # make out of the folder containing this make file the
@@ -45,11 +84,11 @@ define _compile_srcs
     # it out in the rule.
     $$(NEW_OBJS_C): $(project_file)
     $$(NEW_OBJS_C): $(relCWD)%.o: $(relCWD)%.c
-	    $$(print_compile) $$(CC)  $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$(call keep_cpp_srcs,$$^) -o $$@
+	    $$(print_compile) $$(CC)  $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 
     $$(NEW_OBJS_CPP): $(project_file)
     $$(NEW_OBJS_CPP): $(relCWD)%.o: $(relCWD)%.cpp
-	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$(call keep_cpp_srcs,$$^) -o $$@
+	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
@@ -67,7 +106,12 @@ define _link
     $(LOCATION)_BINARY       := $(relCWD)$$(OUT_NAME)
     DEFAULT_GOAL_$(LOCATION) := $$($(LOCATION)_BINARY)
 
-    NEW_C_SRCS  := $(wildcard $(relCWD)*.c $(relCWD)*.cpp)
+    NEW_L_SRCS     := $(wildcard $(relCWD)*.l)
+    NEW_Y_SRCS     := $(wildcard $(relCWD)*.y)
+    NEW_L_SRCS_CPP := $$(NEW_L_SRCS:.l=.l.cpp)
+    NEW_Y_SRCS_CPP := $$(NEW_Y_SRCS:.y=.y.cpp)
+
+    NEW_C_SRCS  := $(wildcard $(relCWD)*.c $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
     NEW_OBJS    := $$(NEW_C_SRCS:.cpp=.o)
     NEW_OBJS    := $$(NEW_OBJS:.c=.o)
 

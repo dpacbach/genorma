@@ -45,7 +45,7 @@ all: copy-bin
 .PHONY: all build copy-bin
 
 
-clean_targets = $(OBJS) $(BINARIES) $(DEPS)
+clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS)
 
 # Use secondary expansion for the dependencies here because we won't yet know
 # the contents of clean_targets at this point.  Also, use wildcard so that we
