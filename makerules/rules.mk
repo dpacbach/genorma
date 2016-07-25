@@ -67,7 +67,7 @@ define _compile_srcs
 
     $$(NEW_Y_SRCS_CPP): $(project_file)
     $$(NEW_Y_SRCS_CPP): $(relCWD)%.y.cpp: $(relCWD)%.y
-	    $$(print_bison) bison -Wno-deprecated -d -o $$@ $$<
+	    $$(print_bison) bison $(bison_no_deprecated) -d -o $$@ $$<
 
     # Here we put a static pattern rule otherwise when we run
     # make out of the folder containing this make file the

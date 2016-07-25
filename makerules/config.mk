@@ -23,6 +23,7 @@ ifeq ($(OS),OSX)
     bin_platform = osx
     soname_ld_option_prefix = -Wl,-install_name,@loader_path/
     ld_no_undefined =
+    bison_no_deprecated =
 else
     CFLAGS += -DOS_LINUX
     SO_EXT := so
@@ -30,4 +31,5 @@ else
     bin_platform = linux64
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined 
+    bison_no_deprecated = -Wno-deprecated
 endif
