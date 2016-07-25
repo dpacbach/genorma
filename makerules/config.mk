@@ -22,10 +22,12 @@ ifeq ($(OS),OSX)
     SO_EXT := dylib
     bin_platform = osx
     soname_ld_option_prefix = -Wl,-install_name,@loader_path/
+    ld_no_undefined =
 else
     CFLAGS += -DOS_LINUX
     SO_EXT := so
     CFLAGS_DEBUG += -gstabs
     bin_platform = linux64
     soname_ld_option_prefix = -Wl,-soname,
+    ld_no_undefined = -Wl,--no-undefined 
 endif
