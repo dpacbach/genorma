@@ -1,7 +1,7 @@
 # ===============================================================
 # Default project settings
 # ===============================================================
-CFLAGS         += -MMD -MP -m64 -Wall -Wpedantic
+CFLAGS         += -MMD -MP -m64 -Wall -Wextra -Werror -pedantic
 CXXFLAGS       += $(CFLAGS)
 
 CFLAGS_DEBUG   += $(CXXFLAGS) -g -ggdb
