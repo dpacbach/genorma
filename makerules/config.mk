@@ -7,10 +7,6 @@
 
 SHELL = /bin/bash
 
-CC  ?= gcc
-CXX ?= g++
-LD  ?= gcc
-
 valid_os = OSX Linux
 
 ifeq ($(filter $(OS),$(valid_os)),)

@@ -7,11 +7,11 @@
 # would become invalid.  If we detect that we've changed PWD since
 # the last time running make then we will invoke a shell script
 # (which then invokes a perl script) to do the reprocessing.
-$(call assert,$(TOPLEVELWD),TOPLEVELWD not defined!)
+$(call assert,$(root),root not defined!)
 
 reloc_sh      := $(CWD)scripts/reloc.sh
-location_file := $(TOPLEVELWD).location
-top_wd        := $(abspath $(TOPLEVELWD))
+location_file := $(root).location
+top_wd        := $(abspath $(root))
 # This is the system's current working directory from which we
 # invoked make.
 new_wd        := $(abspath $(PWD))
