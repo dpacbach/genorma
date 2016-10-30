@@ -26,6 +26,20 @@ log_var() {
     fi
 }
 
+# This is a readlink that will return the resolved and absolute
+# path of a file or pointed to by a link in a way that works
+# across Unix variants.
+readlink_abs_compat() {
+    file="$1"
+    # We could have links pointing to links, so need to keep
+    # resolving until that's not the case.
+    while test -L "$file"; do
+        file="$(readlink "$file")"
+    done
+    # Get folder/basename
+    echo "$(cd "$(dirname "$file")" && pwd)/$(basename "$file")"
+}
+
 # ===============================================================
 # Create the top-level symlink from Makefile --> genorma.mk
 # ===============================================================
@@ -71,7 +85,8 @@ init() {
             # It is safe to do this now because we should have
             # already checked to make sure we're not being
             # sourced.
-            this="$(readlink -f "$(dirname "$0")")"
+            this="$(dirname "$(readlink_abs_compat "$0")")" ||
+                error "failed to get abs path of script"
             makefile_link "$this" "$root" || return 2
             # If there are not c/cpp source files in the root
             # folder then create a stub.

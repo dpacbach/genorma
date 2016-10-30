@@ -84,11 +84,11 @@ define _compile_srcs
     # it out in the rule.
     $$(NEW_OBJS_C): $(project_file)
     $$(NEW_OBJS_C): $(relCWD)%.o: $(relCWD)%.c
-	    $$(print_compile) $$(CC)  $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
+	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 
     $$(NEW_OBJS_CPP): $(project_file)
     $$(NEW_OBJS_CPP): $(relCWD)%.o: $(relCWD)%.cpp
-	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
+	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
