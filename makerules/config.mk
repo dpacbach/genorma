@@ -7,13 +7,15 @@
 
 SHELL = /bin/bash
 
-valid_os = OSX Linux
+uname := $(shell /bin/uname)
+valid_os = Darwin Linux
 
-ifeq ($(filter $(OS),$(valid_os)),)
-    $(error the OS variable must be set to one of: $(valid_os))
+ifeq ($(filter $(uname),$(valid_os)),)
+    $(error supported OS unames must be one of: $(valid_os))
 endif
 
-ifeq ($(OS),OSX)
+ifeq ($(uname),Darwin)
+    OS := OSX
     CFLAGS += -DOS_OSX
     SO_EXT := dylib
     bin_platform = osx
@@ -21,6 +23,7 @@ ifeq ($(OS),OSX)
     ld_no_undefined =
     bison_no_deprecated =
 else
+    OS := Linux
     CFLAGS += -DOS_LINUX
     SO_EXT := so
     CFLAGS_DEBUG += -gstabs
