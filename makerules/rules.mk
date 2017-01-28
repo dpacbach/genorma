@@ -50,12 +50,12 @@ define _compile_srcs
     # to make a change that suppresses a warning.  This is
     # supposed to be corrected in more recent versions of flex,
     # so should probably be removed eventually.
-    $$(NEW_L_SRCS_CPP): $(project_file)
+    $$(NEW_L_SRCS_CPP): $(project_files)
     $$(NEW_L_SRCS_CPP): $(relCWD)%.l.cpp: $(relCWD)%.l
 	    $$(print_flex) flex --posix -s -o $$@ -c $$<
     ifeq ($(OS),Linux)
-	    @sed -i.tmp 's/yy_size_t yy_buf_size/int yy_buf_size/' $$@
-	    @rm $$@.tmp
+	    $(at)sed -i.tmp 's/yy_size_t yy_buf_size/int yy_buf_size/' $$@
+	    $(at)rm $$@.tmp
     endif
     # We cannot compile the flex-generated cpp until bison
     # runs and generates the hpp file.  It seems easiest to
@@ -65,7 +65,7 @@ define _compile_srcs
     # or become up to date together in normal usage.
     $$(NEW_L_SRCS_OBJ): $(relCWD)%.l.o: $(relCWD)%.y.cpp
 
-    $$(NEW_Y_SRCS_CPP): $(project_file)
+    $$(NEW_Y_SRCS_CPP): $(project_files)
     $$(NEW_Y_SRCS_CPP): $(relCWD)%.y.cpp: $(relCWD)%.y
 	    $$(print_bison) bison $(bison_no_deprecated) -d -o $$@ $$<
 
@@ -82,11 +82,11 @@ define _compile_srcs
     # which would not otherwise trigger rebuilding.  We assume
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
-    $$(NEW_OBJS_C): $(project_file)
+    $$(NEW_OBJS_C): $(project_files)
     $$(NEW_OBJS_C): $(relCWD)%.o: $(relCWD)%.c
 	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 
-    $$(NEW_OBJS_CPP): $(project_file)
+    $$(NEW_OBJS_CPP): $(project_files)
     $$(NEW_OBJS_CPP): $(relCWD)%.o: $(relCWD)%.cpp
 	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 endef
@@ -129,7 +129,7 @@ define _link
     # which would not otherwise trigger rebuilding.  We assume
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
-    $(relCWD)$$(OUT_NAME): $(project_file)
+    $(relCWD)$$(OUT_NAME): $(project_files)
     $(relCWD)$$(OUT_NAME): $$(NEW_OBJS) $(call link_binaries,$(LOCATION))
 	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $$(SONAME_$(LOCATION)) $(ld_no_undefined) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_EXTRA) $(TP_LINK_$(LOCATION)) -o $$@
 
