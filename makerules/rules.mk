@@ -47,7 +47,7 @@ define _compile_srcs
     # For deps we don't need to distinguish between c/cpp
     NEW_DEPS     := $$(NEW_C_SRCS:.c=.d) $$(NEW_CPP_SRCS:.cpp=.d)
     ifneq ($$(NEW_PRECOMP),)
-        NEW_DEPS := $$(NEW_DEPS) $$(PRECOMP_NAME).d
+        NEW_DEPS := $$(NEW_DEPS) $$(NEW_PRECOMP).d
     endif
 
     C_SRCS      := $(C_SRCS)  $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
