@@ -38,7 +38,7 @@ all: $$(if $$(ENABLE_BIN_FOLDER),copy-bin,build)
 .PHONY: all build copy-bin
 
 
-clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS)
+clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS)
 
 # Use secondary expansion for the dependencies here because we won't yet know
 # the contents of clean_targets at this point.  Also, use wildcard so that we

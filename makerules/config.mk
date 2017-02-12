@@ -32,3 +32,5 @@ else
     ld_no_undefined = -Wl,--no-undefined 
     bison_no_deprecated = -Wno-deprecated
 endif
+
+PRECOMP_NAME := precomp.hpp

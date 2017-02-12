@@ -29,6 +29,14 @@ define _compile_srcs
     NEW_C_SRCS   := $(wildcard $(relCWD)*.c)
     NEW_CPP_SRCS := $(wildcard $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
 
+    # If there is a header file in the folder with the
+    # special name then assume it will be a precompiled
+    # header which will be compiled to an object file with
+    # the extension .gch (on top of existing extension).
+    NEW_PRECOMP  := $(wildcard $(relCWD)$(PRECOMP_NAME))
+    INC_PRECOMP  := $$(if $$(NEW_PRECOMP),-Winvalid-pch -include $$(PRECOMP_NAME),)
+    PRECOMP_GCH  := $$(if $$(NEW_PRECOMP),$$(NEW_PRECOMP).gch,)
+
     # It is possible that the cpp sources may contain duplicates if
     # a flex/bison generated cpp file is already in the directory.
     NEW_CPP_SRCS := $$(call uniq,$$(NEW_CPP_SRCS))
@@ -38,11 +46,15 @@ define _compile_srcs
 
     # For deps we don't need to distinguish between c/cpp
     NEW_DEPS     := $$(NEW_C_SRCS:.c=.d) $$(NEW_CPP_SRCS:.cpp=.d)
+    ifneq ($$(NEW_PRECOMP),)
+        NEW_DEPS := $$(NEW_DEPS) $$(PRECOMP_NAME).d
+    endif
 
     C_SRCS      := $(C_SRCS)  $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
     YL_SRCS     := $(YL_SRCS) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP) $$(NEW_Y_SRCS_HPP)
     OBJS        := $(OBJS)    $$(NEW_OBJS_C) $$(NEW_OBJS_CPP)
     DEPS        := $(DEPS)    $$(NEW_DEPS)
+    GCHS        := $(GCHS)    $$(PRECOMP_GCH)
 
     -include $$(NEW_DEPS)
 
@@ -86,9 +98,23 @@ define _compile_srcs
     $$(NEW_OBJS_C): $(relCWD)%.o: $(relCWD)%.c
 	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 
-    $$(NEW_OBJS_CPP): $(project_files)
+    # Note that we only support PCH for C++, and so we have
+    # the dependency on the .gch file and also a -include flag
+    # given to the compiler so that all sources in this folder
+    # will include the pch header first.
+    $$(NEW_OBJS_CPP): $(project_files) $$(PRECOMP_GCH)
     $$(NEW_OBJS_CPP): $(relCWD)%.o: $(relCWD)%.cpp
+	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$(INC_PRECOMP) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
+
+    # If we're doing PCH then create a target that builds it.
+    # Important: this compile rule should be kept identical to
+    # the one above used to compile cpp files with the exception
+    # that we don't have the pch-related flags here.
+    ifneq ($$(NEW_PRECOMP),)
+    $$(PRECOMP_GCH): $$(NEW_PRECOMP)
 	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
+    endif
+
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
