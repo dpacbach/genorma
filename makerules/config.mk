@@ -7,7 +7,7 @@
 
 SHELL = /bin/bash
 
-uname := $(shell /bin/uname)
+uname := $(shell uname)
 valid_os = Darwin Linux
 
 ifeq ($(filter $(uname),$(valid_os)),)

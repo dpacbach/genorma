@@ -13,7 +13,7 @@ LD  := g++
 
 CFLAGS_LIB     += -fPIC
 
-ifdef OPT
+ifneq ($(origin OPT),undefined)
     CXXFLAGS_TO_USE = $(CFLAGS_RELEASE)
 else
     CXXFLAGS_TO_USE = $(CFLAGS_DEBUG)
