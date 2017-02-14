@@ -9,3 +9,6 @@ assert_defined = $(if $(call seq,$(origin $1),undefined),$(call undefined_error,
 # variable (because it is defererenced twice).  This way both the
 # name and contents of the variable are known to this function.
 assert_nonempty = $(call assert,$(strip $($(1))),variable $1 is empty but must not be so!)
+
+# This will assert that there are no duplicates in the list.
+assert_no_dup = $(call assert,$(call leq,$1,$(call uniq,$1)),$2)

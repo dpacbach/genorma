@@ -3,6 +3,16 @@
 # the "define" blocks when possible, and only use deferred evaluation (i.e.,
 # the $$) when it is actually necessary.
 ################################################################################
+# Create lib folder
+################################################################################
+define _create_lib
+    $(relCWD)$(lib_name):
+	    $$(print_mkdir) mkdir $$@
+endef
+
+create_lib = $(eval $(call _create_lib))
+
+################################################################################
 # Setting location
 ################################################################################
 define _set_location
@@ -24,7 +34,7 @@ define _compile_srcs
     NEW_Y_SRCS_CPP := $$(NEW_Y_SRCS:.y=.y.cpp)
     NEW_Y_SRCS_HPP := $$(NEW_Y_SRCS:.y=.y.hpp)
 
-    NEW_L_SRCS_OBJ := $$(NEW_L_SRCS:.l=.l.o)
+    NEW_L_SRCS_OBJ := $$(call map,into_lib,$$(NEW_L_SRCS:.l=.l.o))
 
     NEW_C_SRCS   := $(wildcard $(relCWD)*.c)
     NEW_CPP_SRCS := $(wildcard $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
@@ -34,20 +44,21 @@ define _compile_srcs
     # header which will be compiled to an object file with
     # the extension .gch (on top of existing extension).
     NEW_PRECOMP  := $(wildcard $(relCWD)$(PRECOMP_NAME))
-    INC_PRECOMP  := $$(if $$(NEW_PRECOMP),-Winvalid-pch -include $$(PRECOMP_NAME),)
-    PRECOMP_GCH  := $$(if $$(NEW_PRECOMP),$$(NEW_PRECOMP).gch,)
+    INC_PRECOMP  := $$(if $$(NEW_PRECOMP),-Winvalid-pch -include $$(call into_lib,$$(NEW_PRECOMP)),)
+    PRECOMP_GCH  := $$(if $$(NEW_PRECOMP),$$(call into_lib,$$(NEW_PRECOMP).gch),)
 
     # It is possible that the cpp sources may contain duplicates if
     # a flex/bison generated cpp file is already in the directory.
     NEW_CPP_SRCS := $$(call uniq,$$(NEW_CPP_SRCS))
 
-    NEW_OBJS_C   := $$(NEW_C_SRCS:.c=.o)
-    NEW_OBJS_CPP := $$(NEW_CPP_SRCS:.cpp=.o)
+    NEW_OBJS_C   := $$(call map,into_lib,$$(NEW_C_SRCS:.c=.o))
+    NEW_OBJS_CPP := $$(call map,into_lib,$$(NEW_CPP_SRCS:.cpp=.o))
 
     # For deps we don't need to distinguish between c/cpp
-    NEW_DEPS     := $$(NEW_C_SRCS:.c=.d) $$(NEW_CPP_SRCS:.cpp=.d)
+    NEW_DEPS     := $$(call map,into_lib,$$(NEW_C_SRCS:.c=.d))   \
+                    $$(call map,into_lib,$$(NEW_CPP_SRCS:.cpp=.d))
     ifneq ($$(NEW_PRECOMP),)
-        NEW_DEPS := $$(NEW_DEPS) $$(NEW_PRECOMP).d
+        NEW_DEPS := $$(NEW_DEPS) $$(call map,into_lib,$$(NEW_PRECOMP).d)
     endif
 
     C_SRCS      := $(C_SRCS)  $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
@@ -75,7 +86,7 @@ define _compile_srcs
     # Technically this is not exact, but seems fine since
     # the bison cpp and hpp files should go out of date
     # or become up to date together in normal usage.
-    $$(NEW_L_SRCS_OBJ): $(relCWD)%.l.o: $(relCWD)%.y.cpp
+    $$(NEW_L_SRCS_OBJ): $(relCWD)$(lib_name)/%.l.o: $(relCWD)%.y.cpp
 
     $$(NEW_Y_SRCS_CPP): $(project_files)
     $$(NEW_Y_SRCS_CPP): $(relCWD)%.y.cpp: $(relCWD)%.y
@@ -95,7 +106,7 @@ define _compile_srcs
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
     $$(NEW_OBJS_C): $(project_files)
-    $$(NEW_OBJS_C): $(relCWD)%.o: $(relCWD)%.c
+    $$(NEW_OBJS_C): $(relCWD)$(lib_name)/%.o: $(relCWD)%.c | $(relCWD)$(lib_name)
 	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 
     # Note that we only support PCH for C++, and so we have
@@ -103,15 +114,17 @@ define _compile_srcs
     # given to the compiler so that all sources in this folder
     # will include the pch header first.
     $$(NEW_OBJS_CPP): $(project_files) $$(PRECOMP_GCH)
-    $$(NEW_OBJS_CPP): $(relCWD)%.o: $(relCWD)%.cpp
+    $$(NEW_OBJS_CPP): $(relCWD)$(lib_name)/%.o: $(relCWD)%.cpp | $(relCWD)$(lib_name)
 	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$(INC_PRECOMP) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
 
     # If we're doing PCH then create a target that builds it.
     # Important: this compile rule should be kept identical to
     # the one above used to compile cpp files with the exception
-    # that we don't have the pch-related flags here.
+    # that we use the PCH compiler flags variable and don't
+    # explicitly add in the flags used for including PCHs.
     ifneq ($$(NEW_PRECOMP),)
-    $$(PRECOMP_GCH): $$(NEW_PRECOMP)
+    $$(PRECOMP_GCH): $(project_files)
+    $$(PRECOMP_GCH): $$(NEW_PRECOMP) | $(relCWD)$(lib_name)
 	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CXXFLAGS_TO_USE) -c $$< -o $$@
     endif
 
@@ -129,7 +142,7 @@ define _link
 
     OUT_NAME := $1
 
-    $(LOCATION)_BINARY       := $(relCWD)$$(OUT_NAME)
+    $(LOCATION)_BINARY       := $$(call into_lib,$(relCWD)$$(OUT_NAME))
     DEFAULT_GOAL_$(LOCATION) := $$($(LOCATION)_BINARY)
 
     NEW_L_SRCS     := $(wildcard $(relCWD)*.l)
@@ -140,6 +153,7 @@ define _link
     NEW_C_SRCS  := $(wildcard $(relCWD)*.c $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
     NEW_OBJS    := $$(NEW_C_SRCS:.cpp=.o)
     NEW_OBJS    := $$(NEW_OBJS:.c=.o)
+    NEW_OBJS    := $$(call map,into_lib,$$(NEW_OBJS))
 
     BINARIES    := $(BINARIES)    $$($(LOCATION)_BINARY)
     EXECUTABLES := $(EXECUTABLES) $$(if $2,,$$($(LOCATION)_BINARY))
@@ -148,6 +162,8 @@ define _link
     # Clear this string if we're not building an SO
     SONAME_$(LOCATION) := $$(if $2,$$(SONAME),)
 
+    OUT_PATH := $$(call into_lib,$(relCWD)$$(OUT_NAME))
+
     # Note that in the rule below we are adding the project
     # file as an explicit dependency so as to cause all files
     # to be rebuilt if it changes (because usually changes to
@@ -155,8 +171,8 @@ define _link
     # which would not otherwise trigger rebuilding.  We assume
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
-    $(relCWD)$$(OUT_NAME): $(project_files)
-    $(relCWD)$$(OUT_NAME): $$(NEW_OBJS) $(call link_binaries,$(LOCATION))
+    $$(OUT_PATH): $(project_files)
+    $$(OUT_PATH): $$(NEW_OBJS) $(call link_binaries,$(LOCATION)) | $(relCWD)$(lib_name)
 	    $$(print_link) $$(LD) $$($2) $(LDFLAGS) $$(SONAME_$(LOCATION)) $(ld_no_undefined) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_EXTRA) $(TP_LINK_$(LOCATION)) -o $$@
 
 endef
@@ -169,6 +185,7 @@ link_so  = $(eval $(call _link,lib$1.$(SO_EXT),LDFLAGS_LIB))
 ################################################################################
 define _make_so
     $$(call set_location,$1)
+    $$(call create_lib)
     $$(call compile_srcs_so)
     $$(call link_so,$2)
 endef
@@ -177,6 +194,7 @@ make_so = $(eval $(call _make_so,$1,$2))
 
 define _make_exe
     $$(call set_location,$1)
+    $$(call create_lib)
     $$(call compile_srcs_exe)
     $$(call link_exe,$2)
 endef

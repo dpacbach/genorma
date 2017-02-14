@@ -23,26 +23,28 @@ enter_all = $(call map,enter,$1)
 # loaded here.
 include $(CWD)/makefile
 
-################################################################################
+# ===============================================================
 # Standard top-level targets
 build: $$(BINARIES)
-# If run as a target this will build and copy all binaries.
+# If  run  as  a target this will build and copy all binaries. We
+# use  second expansion here because we don't know what the BINA-
+# RIES are at this point since the src tree hasn't been traversed
+# yet.
 copy-bin: $$(call map,to_bin_folder,$$(BINARIES))
-# Does everything.  We use second expansion for the dependency
-# to give the user the ability to control the ENABLE_BIN_FOLDER
-# variable in the project file.
-all: $$(if $$(ENABLE_BIN_FOLDER),copy-bin,build)
+# Does everything.
+all: copy-bin
 
 .DEFAULT_GOAL = all
 
 .PHONY: all build copy-bin
 
+clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS) \
+                $(call map,to_bin_folder,$(BINARIES))
 
-clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS)
-
-# Use secondary expansion for the dependencies here because we won't yet know
-# the contents of clean_targets at this point.  Also, use wildcard so that we
-# only run remove commands for those which exist.
+# Use secondary expansion for the dependencies  here  because  we
+# won't yet know the contents of  clean_targets  at  this  point.
+# Also, use wildcard so that we  only  run  remove  commands  for
+# those which exist.
 clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 	$(at)-rm -f $(location_file)
 
@@ -52,7 +54,23 @@ clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 
 .PHONY: clean
 
-bin_folder = $(root)bin-$(bin_platform)
+# ===============================================================
+# Things having to do with bin/lib folders
 
 $(bin_folder):
 	$(print_mkdir) mkdir $(bin_folder)
+
+to_bin_folder = $(bin_folder)/$(notdir $1)
+
+define __bin_copy_rule
+    $(call to_bin_folder,$1): $1 | $(bin_folder)
+	    $(print_copy_) cp -f $1 $$@
+endef
+# This function will create a rule to  copy  one  binary  to  the
+# top-level binary folder. We won't actually call  this  function
+# until after we have traversed the source tree.
+bin_copy_rule = $(eval $(call __bin_copy_rule,$1))
+
+# Given A/B/C.cpp this will return A/B/X/C.cpp, where  X  is  the
+# lib folder name, specific to the platform.
+into_lib = $(dir $1)$(lib_name)/$(notdir $1)
