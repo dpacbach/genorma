@@ -36,7 +36,7 @@ PRECOMP_NAME := precomp.hpp
 
 # This is the name that will  be  used for all the binary folders
 # both in the source tree and at the top level.
-lib_name := lib-$(bin_platform)
+lib_name := .lib-$(bin_platform)
 bin_name := bin-$(bin_platform)
 
 ifneq ($(origin OPT),undefined)
