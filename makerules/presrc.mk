@@ -54,23 +54,6 @@ clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 
 .PHONY: clean
 
-# ===============================================================
-# Things having to do with bin/lib folders
-
-$(bin_folder):
-	$(print_mkdir) mkdir $(bin_folder)
-
-to_bin_folder = $(bin_folder)/$(notdir $1)
-
-define __bin_copy_rule
-    $(call to_bin_folder,$1): $1 | $(bin_folder)
-	    $(print_copy_) cp -f $1 $$@
-endef
-# This function will create a rule to  copy  one  binary  to  the
-# top-level binary folder. We won't actually call  this  function
-# until after we have traversed the source tree.
-bin_copy_rule = $(eval $(call __bin_copy_rule,$1))
-
 # Given A/B/C.cpp this will return A/B/X/C.cpp, where  X  is  the
 # lib folder name, specific to the platform.
 into_lib = $(dir $1)$(lib_name)/$(notdir $1)

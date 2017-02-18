@@ -25,6 +25,27 @@ $(call map,assert_nonempty,$(must_be_nonempty))
 bin_dup = duplicate file name in list of binaries!
 $(call assert_no_dup,$(call map,notdir,$(BINARIES)),$(bin_dup))
 
+# ===============================================================
+# Things having to do with bin/lib folders
+
+ifneq (undefined,$(origin no_top_bin_folder))
+    bin_folder = .
+endif
+
+$(bin_folder):
+	$(print_mkdir) mkdir $(bin_folder)
+
+to_bin_folder = $(bin_folder)/$(notdir $1)
+
+define __bin_copy_rule
+    $(call to_bin_folder,$1): $1 | $(bin_folder)
+	    $(print_copy_) cp -f $1 $$@
+endef
+# This function will create a rule to  copy  one  binary  to  the
+# top-level binary folder. We won't actually call  this  function
+# until after we have traversed the source tree.
+bin_copy_rule = $(eval $(call __bin_copy_rule,$1))
+
 # Create  a  bin_copy rule for each binary. These rules will copy
 # binary  outputs  (which  do  not include object files) into the
 # top-level binary folder.

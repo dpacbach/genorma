@@ -44,5 +44,7 @@ ifneq ($(origin OPT),undefined)
     bin_name := $(bin_name).opt
 endif
 
-# There is one top-level bin folder per project.
+# There is one top-level bin folder per project.  At least
+# this is the default name unless it is overridden by the
+# project-specific files.
 bin_folder := $(root)$(bin_name)

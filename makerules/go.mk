@@ -24,6 +24,9 @@ else
     # a single executable out of all the sources in the top-level
     # folder and that's it.
     $(call make_exe,MAIN,a.out)
+    # Also in this case just dump the binary into the top folder
+    # instead of creating a binary folder for it.
+    no_top_bin_folder = 1
 endif
 CWD     := $(OLD_CWD)
 
