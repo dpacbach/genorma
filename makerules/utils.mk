@@ -121,6 +121,15 @@ yesDot = $(if $(call seq,$1,),.,$1)
 # is stored as a target-specific variable) and folder containing
 # the current target.
 target_path = $(call noDot,$(call normalizeSlashes,$(dir $@)))
+# Get a path relative to the project root
+rel_root = $(call relPath,$1,$(root))
+# Directory from which make was invoked, relative to the project
+# root.  Will be empty if make is invoked from the root.
+pwd_rel_root := $(call rel_root,$(PWD))
+# This is a function of zero arguments that, when called, will return
+# the CWD (which changes as the source tree is traversed) relative to
+# the project root.
+cwd_rel_root = $(call rel_root,$(call yesDot,$(relCWD)))
 
 #####################################################################
 # String functions

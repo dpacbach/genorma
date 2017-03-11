@@ -7,5 +7,6 @@ include $(CWD)utils.mk
 include $(CWD)printing.mk
 include $(CWD)error.mk
 include $(CWD)reloc.mk
+include $(CWD)locations.mk
 include $(CWD)rules.mk
 include $(CWD)dependencies.mk

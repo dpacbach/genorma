@@ -1,12 +1,6 @@
 # This  file  will  do  anything  can  can only be done after the
 # source tree has been traversed.
 
-is_location   = $(findstring LOCATION_,$1)
-# Find all global variables of the form LOCATION_*
-location_vars = $(call keep_if,is_location,$(.VARIABLES))
-# Get the location name
-all_locations = $(patsubst LOCATION_%,%,$(location_vars))
-
 # ===============================================================
 # Make sure all variables are defined that need to be  (but  note
 # that they could be empty).
@@ -15,7 +9,7 @@ must_be_defined = CFLAGS CXXFLAGS LD LDFLAGS
 $(call map,assert_defined,$(must_be_defined))
 
 # Make sure all variables are non-empty that need to be
-must_be_nonempty = bin_folder bin_name lib_name
+must_be_nonempty = bin_folder bin_name lib_name sub_locations
 $(call map,assert_nonempty,$(must_be_nonempty))
 
 # Here we get a list of all the file names of all binaries (which
@@ -50,3 +44,21 @@ bin_copy_rule = $(eval $(call __bin_copy_rule,$1))
 # binary  outputs  (which  do  not include object files) into the
 # top-level binary folder.
 $(call map,bin_copy_rule,$(BINARIES))
+
+# When the user runs make in a subfolder without specifying any
+# targets then this default target will cause all targets to build
+# whose locations are subfolders of the current system folder.
+# We take all of the binaries under the PWD and make them targets.
+# This will have the effect of building not only them, but also
+# their dependencies even if they are not under the PWD.
+subfolders: $(call map,location_to_binary,$(sub_locations))
+.PHONY: subfolders
+
+# If we run make at the root of the project then just build the
+# `all` target which includes copying; otherwise, just build the
+# binaries in the subfolders.
+ifeq ($(pwd_rel_root),)
+    .DEFAULT_GOAL := all
+else
+    .DEFAULT_GOAL := subfolders
+endif

@@ -13,16 +13,6 @@ endef
 create_lib = $(eval $(call _create_lib))
 
 ################################################################################
-# Setting location
-################################################################################
-define _set_location
-    LOCATION := $1
-    LOCATION_$$(LOCATION) := $(relCWD)
-endef
-
-set_location = $(eval $(call _set_location,$1))
-
-################################################################################
 # Compiling sources into object files
 ################################################################################
 define _compile_srcs
