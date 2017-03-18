@@ -1,13 +1,13 @@
 # ===============================================================
-# This makefile is the driver for all genorma projects.  All
-# genorma projects should create a symlink in their top-level
+# This makefile is the driver for all nr-make projects.  All
+# nr-make projects should create a symlink in their top-level
 # folder (usually called `Makefile`) that links to this file, and
 # the make system will take care of the rest.  Optionally, you
 # can place additional files with .mk extensions in the top-level
 # folder of your project and they will be detected and included
 # at a place such that they are able to override most settings.
 # ===============================================================
-real_name := genorma.mk
+real_name := nr-make.mk
 # The Makefile should be a symlink from the project's top-level
 # folder to this file.
 Makefile  := $(lastword $(MAKEFILE_LIST))
