@@ -19,8 +19,9 @@ ifeq ($(notdir $(Makefile)),$(real_name))
     $(error This file, $(real_name), should not be run directly)
 endif
 
-# ===============================================================
+# First load an optional nr-make RC file if it is present in the
+# user's home folder.
+-include $(HOME)/.nr-make-rc.mk
 # This will load most of the machinery in the make system
-# ===============================================================
 CWD := $(makerules)/
 include $(makerules)/go.mk
