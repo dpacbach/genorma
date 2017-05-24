@@ -62,3 +62,21 @@ ifeq ($(pwd_rel_root),)
 else
     .DEFAULT_GOAL := subfolders
 endif
+
+# If the project has defined which location holds the main
+# executable binary then we will create a target called `run`
+# so that the user can easily run the program from anywhere
+# in the source try by typing `make run`.  It will first ensure
+# that everything is fully build, then will change into the
+# top-level binary folder to run the binary in case we are
+# on a platform where it would otherwise not be able to find
+# the other shared libraries that are also in the bin folder.
+ifdef main_is
+    # This is the file name of the executable.  Assume that
+    # it will be built as part of the `all` target and that
+    # it will be copied into the bin folder, wherever that is.
+    bin_name := $(notdir $(call location_to_binary,$(main_is)))
+    run: all
+	    $(at)cd $(bin_folder) && ./$(bin_name)
+    .PHONY: run
+endif

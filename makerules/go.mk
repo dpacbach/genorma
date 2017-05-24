@@ -27,6 +27,9 @@ else
     # Also in this case just dump the binary into the top folder
     # instead of creating a binary folder for it.
     no_top_bin_folder = 1
+    # Specify that this is the location with the main executable
+    # binary.
+    main_is := MAIN
 endif
 CWD     := $(OLD_CWD)
 
