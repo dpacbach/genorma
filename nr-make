@@ -26,13 +26,13 @@ log_var() {
     fi
 }
 
-# This is a readlink that will return the resolved and absolute
-# path of a file or pointed to by a link in a way that works
+# This is a readlink that  will  return the resolved and absolute
+# path of a file or pointed to by a link  in  a  way  that  works
 # across Unix variants.
 readlink_abs_compat() {
     file="$1"
-    # We could have links pointing to links, so need to keep
-    # resolving until that's not the case.
+    # We could have links pointing to  links, so need to keep re-
+    # solving until that's not the case.
     while test -L "$file"; do
         file="$(readlink "$file")"
     done
@@ -41,7 +41,7 @@ readlink_abs_compat() {
 }
 
 # ===============================================================
-# Create the top-level symlink from Makefile --> nr-make.mk
+# Create the  top-level  symlink  from  Makefile  -->  nr-make.mk
 # ===============================================================
 makefile_link() {
     this="$1"; shift
@@ -82,13 +82,13 @@ init() {
     case "$kind" in
         simple)
             [[ -z "$root" ]] && root="."
-            # It is safe to do this now because we should have
+            # It  is  safe  to do this now because we should have
             # already checked to make sure we're not being
             # sourced.
             this="$(dirname "$(readlink_abs_compat "$0")")" ||
                 error "failed to get abs path of script"
             makefile_link "$this" "$root" || return 2
-            # If there are not c/cpp source files in the root
+            # If  there  are  not  c/cpp source files in the root
             # folder then create a stub.
             count="$(ls $root/*.c $root/*.cpp 2>/dev/null | wc -l)"
             if (( count == 0 )); then
@@ -151,7 +151,7 @@ main() {
 }
 
 # ===============================================================
-# Detect if we are being sourced, and, if so, return with error.
+# Detect  if we are being sourced, and, if so, return with error.
 # ===============================================================
 [[ "${BASH_SOURCE[0]}" != "$0" ]] && {
     echo >&2 "This script should not be sourced."

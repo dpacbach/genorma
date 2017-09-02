@@ -1,5 +1,5 @@
-# This make file controls echoing/logging output during
-# the make run.
+# This  make file controls echoing/logging output during the make
+# run.
 
 c_red     := \033[31m
 c_green   := \033[32m

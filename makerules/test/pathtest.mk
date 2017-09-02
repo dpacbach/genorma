@@ -1,5 +1,5 @@
-# This module contains unit tests for the relPath function.
-# It is meant to be run from the same folder as this file.
+# This module contains unit tests for the relPath function. It is
+# meant to be run from the same folder as this file.
 
 include ../gmsl/gmsl
 include ../utils.mk
