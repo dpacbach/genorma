@@ -34,15 +34,17 @@ endif
 
 PRECOMP_NAME := precomp.hpp
 
+# Use this anytime we need to distinguish two  files  or  folders
+# from the build output based on OPT status.
+opt-suffix :=
+ifneq ($(origin OPT),undefined)
+    opt-suffix := .opt
+endif
+
 # This is the name that will  be  used for all the binary folders
 # both in the source tree and at the top level.
-lib_name := .lib-$(bin_platform)
-bin_name := bin-$(bin_platform)
-
-ifneq ($(origin OPT),undefined)
-    lib_name := $(lib_name).opt
-    bin_name := $(bin_name).opt
-endif
+lib_name := .lib-$(bin_platform)$(opt-suffix)
+bin_name := bin-$(bin_platform)$(opt-suffix)
 
 # There is one top-level bin folder per project. At least this is
 # the default name unless it is overridden by the

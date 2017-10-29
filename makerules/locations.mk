@@ -1,6 +1,13 @@
 # ===============================================================
 # Locations
 # ===============================================================
+# This contains a list of all locations encountered in the entire
+# build tree, even ones which may not be built in this invocation
+# of  make,  depending on the target requested and/or the current
+# system directory.
+all_locations :=
+# This contains a list of only those locations which  are  at  or
+# below the current system working directory.
 sub_locations :=
 
 # Registers  a  location. Also, if the path corresponding to this
@@ -17,6 +24,7 @@ define _set_location
         $(if $(filter $(pwd_rel_root)/%,$(cwd_rel_root)/),$1,), \
         $1                                                      \
     )
+    all_locations += $1
 endef
 
 set_location = $(eval $(call _set_location,$1))
