@@ -8,13 +8,9 @@
 SHELL = /bin/bash
 
 uname := $(shell uname)
-valid_os = Darwin Linux
+valid_os = Darwin Linux CYGWIN*
 
-ifeq ($(filter $(uname),$(valid_os)),)
-    $(error supported OS unames must be one of: $(valid_os))
-endif
-
-ifeq ($(uname),Darwin)
+ifeq (Linux,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
     SO_EXT := dylib
@@ -22,7 +18,9 @@ ifeq ($(uname),Darwin)
     soname_ld_option_prefix = -Wl,-install_name,@loader_path/
     ld_no_undefined =
     bison_no_deprecated =
+    lib_prefix = lib
 else
+ifeq (Darwin,$(uname))
     OS := Linux
     CFLAGS += -DOS_LINUX
     SO_EXT := so
@@ -30,6 +28,22 @@ else
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined 
     bison_no_deprecated = -Wno-deprecated
+    lib_prefix = lib
+else
+ifneq (,$(filter CYGWIN%,$(uname)))
+    OS := Windows
+    CFLAGS += -DOS_WIN
+    SO_EXT := dll
+    bin_platform = win64
+    LDFLAGS += -static-libgcc -static-libstdc++
+    soname_ld_option_prefix = -Wl,-soname,
+    ld_no_undefined = -Wl,--no-undefined
+    #bison_no_deprecated = -Wno-deprecated
+    lib_prefix =
+else
+    $(error supported OS unames must be one of: $(valid_os))
+endif
+endif
 endif
 
 PRECOMP_NAME := precomp.hpp

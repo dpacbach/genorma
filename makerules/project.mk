@@ -7,11 +7,13 @@ CXXFLAGS       += $(CFLAGS)
 CFLAGS_DEBUG   += $(CXXFLAGS) -g -ggdb
 CFLAGS_RELEASE += $(CXXFLAGS) -Ofast
 
-CC  := gcc
-CXX := g++
-LD  := g++
+CC  ?= gcc
+CXX ?= g++
+LD  ?= g++
 
-CFLAGS_LIB     += -fPIC
+ifneq ($(OS),Windows)
+    CFLAGS_LIB += -fPIC
+endif
 
 ifneq ($(origin OPT),undefined)
     CXXFLAGS_TO_USE = $(CFLAGS_RELEASE)
@@ -19,7 +21,6 @@ else
     CXXFLAGS_TO_USE = $(CFLAGS_DEBUG)
 endif
 
-LDFLAGS     :=
-LDFLAGS_LIB := $(LDFLAGS) -shared 
+LDFLAGS_LIB := -shared
 
 INSTALL_PREFIX := $(HOME)/tmp

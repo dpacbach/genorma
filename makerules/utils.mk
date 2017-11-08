@@ -148,7 +148,7 @@ ends_with = $(filter %$1,$2)
 has_exts = $(strip $(foreach _i,$2,$(call ends_with,$(_i),$1)))
 # These functions are for filtering  lists  based  on  extensions
 is_cpp_src   = $(call has_exts,$1,.c .cpp)
-is_link_file = $(call has_exts,$1,.o .a .so .dylib)
+is_link_file = $(call has_exts,$1,.o .a .so .dylib .dll)
 # For convenience
 keep_cpp_srcs   = $(call keep_if,is_cpp_src,$1)
 keep_link_files = $(call keep_if,is_link_file,$1)

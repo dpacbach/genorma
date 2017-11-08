@@ -23,6 +23,9 @@ my $file     = shift;
 open f, $file or die $!;
 # Loop over the lines in the file
 while (<f>) {
+    # Remove any windows line endings otherwise it will mess up
+    # what comes below.
+    s/\r//g;
     # If  we have a blank line then just echo it and skip to next
     # line
     if (/^$/) {
@@ -58,6 +61,16 @@ while (<f>) {
 # into a path relative to new_root.
 sub fix_path {
     $path = shift;
+    # Remove any line endings from the path which can cause
+    # problems on windows if the .d file is emitted by a native
+    # windows gcc.
+    $path =~ s/\n//g;
+    $path =~ s/\r//g;
+    # If it's a rooted windows path then cygpath it
+    if ($path =~ /:/) {
+        $path = `cygpath -a $path`;
+        chomp $path;
+    }
     # If  it  starts  with a forward slash then it is an absolute
     # path and we should not touch it.
     if ($path =~ /^\//) {
