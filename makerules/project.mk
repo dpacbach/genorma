@@ -21,6 +21,7 @@ else
     CXXFLAGS_TO_USE = $(CFLAGS_DEBUG)
 endif
 
+LDFLAGS     ?=
 LDFLAGS_LIB := -shared
 
 INSTALL_PREFIX := $(HOME)/tmp

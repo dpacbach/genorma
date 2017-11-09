@@ -10,7 +10,7 @@ SHELL = /bin/bash
 uname := $(shell uname)
 valid_os = Darwin Linux CYGWIN*
 
-ifeq (Linux,$(uname))
+ifeq (Darwin,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
     SO_EXT := dylib
@@ -20,7 +20,7 @@ ifeq (Linux,$(uname))
     bison_no_deprecated =
     lib_prefix = lib
 else
-ifeq (Darwin,$(uname))
+ifeq (Linux,$(uname))
     OS := Linux
     CFLAGS += -DOS_LINUX
     SO_EXT := so
