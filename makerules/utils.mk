@@ -166,3 +166,14 @@ print-%:
 .PHONY: always
 
 set_default_goal = $(eval .DEFAULT_GOAL := $$(DEFAULT_GOAL_$1))
+
+# Define "not specified" as either of the the below two cases.
+not_specified = $(filter $(origin $1),undefined default)
+# Function that will assign a variable but only if the variable's
+# value  is "not specified" as defined above. This function is ba-
+# sically  used because make's ?= operator will not do the assign-
+# ment when a variable's origin is "default".
+set_if_not_specified = $(eval      \
+    $(if $(call not_specified,$1), \
+        $1 := $2,)                 \
+)
