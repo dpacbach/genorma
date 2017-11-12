@@ -1,8 +1,11 @@
 # ===============================================================
-# For clarity, the attempt in this file is to prefer eager evalu-
-# ation  within  the  "define" blocks when possible, and only use
-# deferred evaluation (i.e., the $$) when it is  actually  neces-
-# sary.
+# NOTE:  the  attempt  in this file is to always use eager evalua-
+# tion within the "define" blocks (including inside  rules)  when
+# possible, and only use deferred  evaluation (i.e., the $$) when
+# it is actually necessary. Therefore, be very careful if
+# changing a $$ to $, since the values of some variables are  not
+# known at the time the define blocks are evaluated.
+
 # ===============================================================
 # Create lib folder
 # ===============================================================
@@ -166,7 +169,7 @@ define _link
     # it out in the rule.
     $$(OUT_PATH): $(project_files)
     $$(OUT_PATH): $$(NEW_OBJS) $(call link_binaries,$(LOCATION)) | $(relCWD)$(lib_name)
-	    $$(print_link) $$(LD) $(LDFLAGS) $$($2) $$(SONAME_$(LOCATION)) $(ld_no_undefined) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_EXTRA) $(TP_LINK_$(LOCATION)) -o $$@
+	    $$(print_link) $$(LD) $$(LDFLAGS) $$($2) $$(SONAME_$(LOCATION)) $(ld_no_undefined) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_EXTRA) $(TP_LINK_$(LOCATION)) -o $$@
 
 endef
 

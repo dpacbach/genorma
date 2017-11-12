@@ -1,6 +1,10 @@
 # This  file  will  do  anything  can  can only be done after the
 # source tree has been traversed.
 
+# Load the remainder of  the  nr-make  modules  which can only be
+# loaded after the source tree has been traversed.
+include $(CWD)/post-config.mk
+
 # ===============================================================
 # Make sure all variables are defined that need to be  (but  note
 # that they could be empty).

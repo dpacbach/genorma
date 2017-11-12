@@ -1,3 +1,6 @@
+# This file handles all config  info  that  can be deduced before
+# any user config files are read in.
+#
 # Disable implicit rules
 .SUFFIXES:
 
@@ -26,7 +29,7 @@ ifeq (Linux,$(uname))
     SO_EXT := so
     bin_platform = linux64
     soname_ld_option_prefix = -Wl,-soname,
-    ld_no_undefined = -Wl,--no-undefined 
+    ld_no_undefined = -Wl,--no-undefined
     bison_no_deprecated = -Wno-deprecated
     lib_prefix = lib
 else
@@ -35,7 +38,8 @@ ifneq (,$(filter CYGWIN%,$(uname)))
     CFLAGS += -DOS_WIN
     SO_EXT := dll
     bin_platform = win64
-    LDFLAGS += -static-libgcc -static-libstdc++
+    STATIC_LIBSTDCXX =
+    STATIC_LIBGCC =
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined
     #bison_no_deprecated = -Wno-deprecated

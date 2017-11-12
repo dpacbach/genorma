@@ -19,10 +19,18 @@ enter = $(eval $(call enterimpl,$1))
 enter_all = $(call map,enter,$1)
 
 # ===============================================================
-# Traversal  of  makerules  and  source  tree.  Entering into the
-# makerules folder will load all of  the makerules in that folder
-# except for the ones explicitly loaded here.
-include $(CWD)/makefile
+# Load  all  the  modules in nr-make that can be loaded before we
+# load any project-specific config files  and traverse the source
+# tree. Note that these need to be in a certain order
+include $(CWD)gmsl/gmsl
+include $(CWD)pre-config.mk
+include $(CWD)utils.mk
+include $(CWD)printing.mk
+include $(CWD)error.mk
+include $(CWD)reloc.mk
+include $(CWD)locations.mk
+include $(CWD)rules.mk
+include $(CWD)dependencies.mk
 
 # ===============================================================
 # Standard top-level targets
