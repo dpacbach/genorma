@@ -9,6 +9,9 @@ c_magenta := \033[35m
 c_cyan    := \033[36m
 c_norm    := \033[00m
 
+# There needs to be a blank line after this.
+space := \
+
 ifneq (undefined, $(origin V))
     at :=
     print_rule :=
@@ -26,3 +29,12 @@ print_copy_   = $(call print_rule,  $(c_magenta)copying$(c_norm) $$< to $(bin_fo
 print_mkdir   = $(call print_rule, $(c_magenta)creating$(c_norm) $@)
 print_flex    = $(call print_rule,     $(c_yellow)flex$(c_norm) $<)
 print_bison   = $(call print_rule,    $(c_yellow)bison$(c_norm) $<)
+
+# A shell command to echo a  line  potentially  with  color.  The
+# space  is so that the function itself returns something so that
+# make won't complain about a 'missing separator' when calling it
+# inside  an $(info) command (though the shell does the printing).
+output = $(space)$(shell echo -e '$1')
+
+# This one does not go in a rule
+output_using = $(call output,    $(c_magenta)using$(c_norm) $1)

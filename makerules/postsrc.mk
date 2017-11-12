@@ -9,11 +9,12 @@ include $(CWD)/post-config.mk
 # Make sure all variables are defined that need to be  (but  note
 # that they could be empty).
 
-must_be_defined = CFLAGS CXXFLAGS LD LDFLAGS
+must_be_defined = CFLAGS CXXFLAGS LDFLAGS
 $(call map,assert_defined,$(must_be_defined))
 
 # Make sure all variables are non-empty that need to be
-must_be_nonempty = bin_folder bin_name lib_name sub_locations
+must_be_nonempty = CC CXX LD bin_folder            \
+                   bin_name lib_name sub_locations
 $(call map,assert_nonempty,$(must_be_nonempty))
 
 # Here we get a list of all the file names of all binaries (which
@@ -22,6 +23,10 @@ $(call map,assert_nonempty,$(must_be_nonempty))
 # to copy them all into the same top-level folder.
 bin_dup = duplicate file name in list of binaries!
 $(call assert_no_dup,$(call map,notdir,$(BINARIES)),$(bin_dup))
+
+# This file will dump some info on what tools are being used or
+# the contents of certain variables if the user requested.
+include $(CWD)/info.mk
 
 # ===============================================================
 # Things having to do with bin/lib folders
