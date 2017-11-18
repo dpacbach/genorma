@@ -38,8 +38,10 @@ ifneq (,$(filter CYGWIN%,$(uname)))
     CFLAGS += -DOS_WIN
     SO_EXT := dll
     bin_platform = win64
-    STATIC_LIBSTDCXX =
-    STATIC_LIBGCC =
+    LDFLAGS += -static
+    ifdef CC
+        PATH := $(PATH):$(dir $(CC))
+    endif
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined
     #bison_no_deprecated = -Wno-deprecated
