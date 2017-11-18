@@ -9,7 +9,7 @@
 # (which then invokes  a  perl  script)  to  do the reprocessing.
 $(call assert,$(root),root not defined!)
 
-reloc_sh      := $(CWD)scripts/reloc.sh
+reloc_sh      := $(makerules)/reloc.sh
 location_file := $(root).location
 top_wd        := $(abspath $(root))
 # This is the system's current working directory  from  which  we
