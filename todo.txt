@@ -1,0 +1,28 @@
+TODO:
+
+  * give location file a platform-specfic name
+
+  * when make is run, look at the contents of the location
+    file and update it but ONLY if we are in a new directoy.
+    we must preserve the timestamp on this file otherwise.
+    This must be done towards the beginning of the process
+    before any other .d related things happen.
+  * when make is traversing the tree, get a list of
+    all .d files.
+  * Create a rule (for each .d) file that will remake
+    them if they are old relative to the location file,
+    and the remaking will be done by the perl script
+    (we can get rid of the shell script).
+  * Rule should be written so that .d files can be adjusted
+    in parallel.
+  * Then, make will include the .d files as usual, however
+    if any of them need to be remade, it will do so, and then
+    reload itself.
+
+  * Put version at top of make file, with the aim to reduce
+    the build output to just a single makefile
+
+  * see about getting rid of dependence on gmsl -- import any
+    functions that are being used.
+
+  * need to update nr-make CLI tool to use mono build
