@@ -167,9 +167,13 @@ define _link
     # which would not otherwise trigger rebuilding.  We assume
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
+    #
+    # In linker command we put LDFLAGS at the end so that the
+    # addition of a library for linking will come after all
+    # the other modules (which may need them).
     $$(OUT_PATH): $(project_files)
     $$(OUT_PATH): $$(NEW_OBJS) $(call link_binaries,$(LOCATION)) | $(relCWD)$(lib_name)
-	    $$(print_link) $$(LD) $$(LDFLAGS) $$($2) $$(SONAME_$(LOCATION)) $(ld_no_undefined) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_EXTRA) $(TP_LINK_$(LOCATION)) -o $$@
+	    $$(print_link) $$(LD) $$($2) $$(SONAME_$(LOCATION)) $(ld_no_undefined) -Wl,-rpath,'$$$$ORIGIN' $$(call keep_link_files,$$^) $(TP_LINK_EXTRA) $(TP_LINK_$(LOCATION)) $(LDFLAGS) -o $$@
 
 endef
 
