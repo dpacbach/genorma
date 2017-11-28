@@ -101,7 +101,10 @@ relPath =                                          \
 #   PWD: the system's current directory as seen by make
 #   CWD: the folder that make is currently processing
 # This function will return a relative path from  make's  PWD  to
-# the given path.
+# the  given  path.  Note that whenever we reference the PWD vari-
+# able we need to take the realpath in order to resolve  symlinks
+# for the sake of  consistency,  otherwise  this can cause issues
+# later.
 relPWD = $(call relPath,$1,$(realpath $(PWD)))
 # Get the value of CWD relative to make's PWD. 
 relCWD = $(patsubst %//,%/,$(call trailingSlash,$(_relCWD)))
@@ -127,7 +130,10 @@ target_path = $(call noDot,$(call normalizeSlashes,$(dir $@)))
 # Get a path relative to the project root
 rel_root = $(call relPath,$1,$(root))
 # Directory from which make was  invoked, relative to the project
-# root. Will be empty if make is invoked from the root.
+# root. Will be empty if make is invoked from the root. Note that
+# whenever  we  reference the PWD variable we need to take the re-
+# alpath in order to  resolve  symlinks  for  the  sake of consis-
+# tency, otherwise this can cause issues later.
 pwd_rel_root := $(call rel_root,$(realpath $(PWD)))
 # This is a function of  zero  arguments  that, when called, will
 # return the CWD (which changes as the source tree is  traversed)
