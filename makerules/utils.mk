@@ -102,7 +102,7 @@ relPath =                                          \
 #   CWD: the folder that make is currently processing
 # This function will return a relative path from  make's  PWD  to
 # the given path.
-relPWD = $(call relPath,$1,$(PWD))
+relPWD = $(call relPath,$1,$(realpath $(PWD)))
 # Get the value of CWD relative to make's PWD. 
 relCWD = $(patsubst %//,%/,$(call trailingSlash,$(_relCWD)))
 _relCWD = $(call relPWD,$(patsubst %/,%,$(CWD)))
@@ -128,7 +128,7 @@ target_path = $(call noDot,$(call normalizeSlashes,$(dir $@)))
 rel_root = $(call relPath,$1,$(root))
 # Directory from which make was  invoked, relative to the project
 # root. Will be empty if make is invoked from the root.
-pwd_rel_root := $(call rel_root,$(PWD))
+pwd_rel_root := $(call rel_root,$(realpath $(PWD)))
 # This is a function of  zero  arguments  that, when called, will
 # return the CWD (which changes as the source tree is  traversed)
 # relative to the project root.
