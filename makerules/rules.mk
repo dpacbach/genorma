@@ -126,6 +126,7 @@ define _compile_srcs
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
+compile_srcs_ar  = $(eval $(call _compile_srcs,))
 compile_srcs_so  = $(eval $(call _compile_srcs,CFLAGS_LIB))
 
 # ===============================================================
@@ -177,12 +178,59 @@ define _link
 
 endef
 
+# ===============================================================
+# Creating Archive
+# ===============================================================
+define _ar
+
+    OUT_NAME := $1
+
+    $(LOCATION)_BINARY       := $$(call into_lib,$(relCWD)$$(OUT_NAME))
+    DEFAULT_GOAL_$(LOCATION) := $$($(LOCATION)_BINARY)
+
+    NEW_L_SRCS     := $(wildcard $(relCWD)*.l)
+    NEW_Y_SRCS     := $(wildcard $(relCWD)*.y)
+    NEW_L_SRCS_CPP := $$(NEW_L_SRCS:.l=.l.cpp)
+    NEW_Y_SRCS_CPP := $$(NEW_Y_SRCS:.y=.y.cpp)
+
+    NEW_C_SRCS  := $(wildcard $(relCWD)*.c $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
+    NEW_OBJS    := $$(NEW_C_SRCS:.cpp=.o)
+    NEW_OBJS    := $$(NEW_OBJS:.c=.o)
+    NEW_OBJS    := $$(call map,into_lib,$$(NEW_OBJS))
+
+    BINARIES    := $(BINARIES)    $$($(LOCATION)_BINARY)
+
+    OUT_PATH := $$(call into_lib,$(relCWD)$$(OUT_NAME))
+
+    # Note that in the rule below we are adding the project
+    # file as an explicit dependency so as to cause all files
+    # to be rebuilt if it changes (because usually changes to
+    # this file would change a compiler flag or add a dependency
+    # which would not otherwise trigger rebuilding.  We assume
+    # that this file ends in a .mk extension and then filter
+    # it out in the rule.
+    $$(OUT_PATH): $(project_files)
+    $$(OUT_PATH): $$(NEW_OBJS) $(call link_binaries,$(LOCATION)) | $(relCWD)$(lib_name)
+	    $$(print_ar) $$(AR) ucr $$@ $$(call keep_link_files,$$^)
+
+endef
+
 link_exe = $(eval $(call _link,$1,))
 link_so  = $(eval $(call _link,$(lib_prefix)$1.$(SO_EXT),LDFLAGS_LIB))
+archive  = $(eval $(call _ar,$(lib_prefix)$1.$(AR_EXT)))
 
 # ===============================================================
 # Highlevel functions
 # ===============================================================
+define _make_ar
+    $$(call set_location,$1)
+    $$(call create_lib)
+    $$(call compile_srcs_ar)
+    $$(call archive,$2)
+endef
+
+make_ar = $(eval $(call _make_ar,$1,$2))
+
 define _make_so
     $$(call set_location,$1)
     $$(call create_lib)

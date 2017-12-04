@@ -13,7 +13,7 @@ must_be_defined = CFLAGS CXXFLAGS LDFLAGS
 $(call map,assert_defined,$(must_be_defined))
 
 # Make sure all variables are non-empty that need to be
-must_be_nonempty = CC CXX LD bin_folder            \
+must_be_nonempty = CC CXX LD AR bin_folder          \
                    bin_name lib_name sub_locations
 $(call map,assert_nonempty,$(must_be_nonempty))
 
@@ -52,7 +52,7 @@ bin_copy_rule = $(eval $(call __bin_copy_rule,$1))
 # Create  a  bin_copy rule for each binary. These rules will copy
 # binary  outputs  (which  do  not include object files) into the
 # top-level binary folder.
-$(call map,bin_copy_rule,$(BINARIES))
+$(call map,bin_copy_rule,$(bins_to_copy))
 
 # When the user runs make  in  a subfolder without specifying any
 # targets  then  this  default  target  will cause all targets to

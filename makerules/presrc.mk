@@ -35,11 +35,22 @@ include $(CWD)dependencies.mk
 # ===============================================================
 # Standard top-level targets
 build: $$(BINARIES)
+
+# This  is a list of all binaries that we want to copy to the bin
+# folder. Currently, we just  take  all  the top-level targets of
+# each folder (e.g., exe, so) and filter out the archives,  since
+# those don't need to be distributed to run. This  list  is  used
+# both here (for defining the dependencies of  the  copy-bin  tar-
+# get)  and also in another place to create the actual rules that
+# do the copying. At this point  we  don't  know the list of bina-
+# ries, so delay evaluation.
+bins_to_copy = $(filter-out %.$(AR_EXT),$(BINARIES))
+
 # If  run  as  a target this will build and copy all binaries. We
 # use  second expansion here because we don't know what the BINA-
 # RIES are at this point since the src tree hasn't been traversed
 # yet.
-copy-bin: $$(call map,to_bin_folder,$$(BINARIES))
+copy-bin: $$(call map,to_bin_folder,$$(bins_to_copy))
 # Does everything.
 all: copy-bin
 

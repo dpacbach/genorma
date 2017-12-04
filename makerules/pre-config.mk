@@ -17,6 +17,7 @@ ifeq (Darwin,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
     SO_EXT := dylib
+    AR_EXT := a
     bin_platform = osx
     soname_ld_option_prefix = -Wl,-install_name,@loader_path/
     ld_no_undefined =
@@ -27,6 +28,7 @@ ifeq (Linux,$(uname))
     OS := Linux
     CFLAGS += -DOS_LINUX
     SO_EXT := so
+    AR_EXT := a
     bin_platform = linux64
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined
@@ -37,6 +39,7 @@ ifneq (,$(filter CYGWIN%,$(uname)))
     OS := Windows
     CFLAGS += -DOS_WIN
     SO_EXT := dll
+    AR_EXT := a
     bin_platform = win64
     LDFLAGS += -static
     ifdef CC

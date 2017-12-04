@@ -22,6 +22,7 @@ endif
 
 print_compile = $(call print_rule,$(c_green)compiling$(c_norm) $<)
 print_link    = $(call print_rule,  $(c_cyan)linking$(c_norm) $@)
+print_ar      = $(call print_rule,$(c_cyan)archiving$(c_norm) $@)
 #print_run     = $(call print_rule,  $(c_blue)running$(c_norm) $<)
 print_remove  = $(call print_rule, $(c_red)removing$(c_norm) $*)
 print_copy    = $(call print_rule,  $(c_magenta)copying$(c_norm) $< to $(bin_folder))
