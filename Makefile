@@ -39,7 +39,7 @@ $(out): $(input_files) $(this) | $(out-make)
 	cp -f makerules/reloc.pl    $(out-make)
 	cp -f makerules/progress.sh $(out-make)
 	cp -f nr-make               $(out-make)
-	git log -1 --pretty=format:%H >>$(out-make)/VERSION.txt
+	git log -1 --pretty=format:%H >$(out-make)/VERSION.txt
 	mv $(tmp) $(out)
 
 tar-name := mono-out.tar
