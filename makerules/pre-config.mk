@@ -16,6 +16,7 @@ valid_os = Darwin Linux CYGWIN*
 ifeq (Darwin,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
+    ARFLAGS := ucrs
     SO_EXT := dylib
     AR_EXT := a
     bin_platform = osx
@@ -27,6 +28,7 @@ else
 ifeq (Linux,$(uname))
     OS := Linux
     CFLAGS += -DOS_LINUX
+    ARFLAGS := Uucrs
     SO_EXT := so
     AR_EXT := a
     bin_platform = linux64
@@ -38,6 +40,7 @@ else
 ifneq (,$(filter CYGWIN%,$(uname)))
     OS := Windows
     CFLAGS += -DOS_WIN
+    ARFLAGS := Uucrs
     SO_EXT := dll
     AR_EXT := a
     bin_platform = win64
