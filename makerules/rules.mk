@@ -210,7 +210,7 @@ define _ar
     # that this file ends in a .mk extension and then filter
     # it out in the rule.
     $$(OUT_PATH): $(project_files)
-    $$(OUT_PATH): $$(NEW_OBJS) $(call link_binaries,$(LOCATION)) | $(relCWD)$(lib_name)
+    $$(OUT_PATH): $$(NEW_OBJS) | $(relCWD)$(lib_name)
 	    $$(print_ar) $$(AR) $(ARFLAGS) $$@ $$(call keep_link_files,$$^)
 
 endef
