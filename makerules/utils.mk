@@ -2,6 +2,13 @@
 # file
 
 # ===============================================================
+# Lists
+#
+# Simply apply a function to the reverse of a list, and  then  re-
+# verse the result back again.
+on_reverse = $(call reverse,$(call $1,$(call reverse,$2)))
+
+# ===============================================================
 # Tuples
 #
 # Take two arguments and put them in the below  format  which  is

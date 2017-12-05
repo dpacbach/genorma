@@ -126,7 +126,7 @@ define _compile_srcs
 endef
 
 compile_srcs_exe = $(eval $(call _compile_srcs,))
-compile_srcs_ar  = $(eval $(call _compile_srcs,))
+compile_srcs_ar  = $(eval $(call _compile_srcs,CFLAGS_AR))
 compile_srcs_so  = $(eval $(call _compile_srcs,CFLAGS_LIB))
 
 # ===============================================================
@@ -211,7 +211,7 @@ define _ar
     # it out in the rule.
     $$(OUT_PATH): $(project_files)
     $$(OUT_PATH): $$(NEW_OBJS) $(call link_binaries,$(LOCATION)) | $(relCWD)$(lib_name)
-	    $$(print_ar) $$(AR) ucr $$@ $$(call keep_link_files,$$^)
+	    $$(print_ar) $$(AR) Uucrs $$@ $$(call keep_link_files,$$^)
 
 endef
 

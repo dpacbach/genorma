@@ -19,9 +19,11 @@ CFLAGS_RELEASE += $(CXXFLAGS) -Ofast
 $(call set_if_not_specified,CC,gcc)
 $(call set_if_not_specified,CXX,g++)
 $(call set_if_not_specified,LD,g++)
+$(call set_if_not_specified,AR,ar)
 
 ifneq ($(OS),Windows)
     CFLAGS_LIB += -fPIC
+    CFLAGS_AR  += -fPIC
 endif
 
 ifneq ($(origin OPT),undefined)
