@@ -94,6 +94,8 @@ void hello() {
     cout << "Hello, World!" << endl;
 }'
 
+stub_ar="$stub_so"
+
 # ===============================================================
 # Creates a new project
 # ===============================================================
@@ -174,6 +176,7 @@ new_module() {
 
 exe()    { new_module make_exe "$stub_main" "$@"; }
 shared() { new_module make_so  "$stub_so"   "$@"; }
+static() { new_module make_ar  "$stub_ar"   "$@"; }
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #                              Usage
@@ -185,24 +188,24 @@ Usage: nr-make mode [...]
 
     mode can be: init
 
-Example 1. to create a new simple project
-           in the current directory:
+Example 1. create a simple project in the current directory:
 
     $ nr-make init simple
 
-Example 2. to create a new simple project
-           in a given folder (which will be
-           created if it does not exist):
+Example 2. create a simple project in a given folder (which
+           will be created if it does not exist):
 
     $ nr-make init simple path/to/folder
 
-Example 3. to create a shared library in a
-           source folder:
+Example 3. create a shared library in a source folder:
 
     $ nr-make shared name path/to/folder
 
-Example 4. to create an executable in a
-           source folder:
+Example 4. create static library in a source folder:
+
+    $ nr-make static name path/to/folder
+
+Example 5. create an executable in a source folder:
 
     $ nr-make exe name path/to/folder
 '
@@ -217,6 +220,7 @@ main() {
         init)   ;;
         exe)    ;;
         shared) ;;
+        static) ;;
         *)
             echo "$usage"
             return 1
