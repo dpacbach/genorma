@@ -32,7 +32,7 @@ include $(CWD)/info.mk
 # Things having to do with bin/lib folders
 
 ifneq (undefined,$(origin no_top_bin_folder))
-    bin_folder = .
+    bin_folder = $(root)
 endif
 
 $(bin_folder):
