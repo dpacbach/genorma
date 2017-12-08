@@ -84,8 +84,19 @@ ifdef main_is
     # This is the file name of the  executable.  Assume  that  it
     # will be built as part of the `all` target and that it  will
     # be copied into the bin folder, wherever that is.
-    bin_name := $(notdir $(call location_to_binary,$(main_is)))
+    main_name := $(notdir $(call location_to_binary,$(main_is)))
     run: all
-	    $(at)cd $(bin_folder) && ./$(bin_name)
+	    $(at)cd $(bin_folder) && ./$(main_name)
+    .PHONY: run
+endif
+
+# Same as above for main_is except for the testing executable.
+ifdef test_is
+    # This is the file name of the  executable.  Assume  that  it
+    # will be built as part of the `all` target and that it  will
+    # be copied into the bin folder, wherever that is.
+    test_name := $(notdir $(call location_to_binary,$(test_is)))
+    test: all
+	    $(at)cd $(bin_folder) && ./$(test_name)
     .PHONY: run
 endif
