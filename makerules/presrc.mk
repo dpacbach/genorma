@@ -56,7 +56,13 @@ all: copy-bin
 
 .DEFAULT_GOAL = all
 
-.PHONY: all build copy-bin
+# Build both debug and  release.  -s  means  "quiet" so that make
+# will not print e.g. "Entering directory...".
+both:
+	@$(MAKE) -s all
+	@$(MAKE) -s all OPT=
+
+.PHONY: all build copy-bin both
 
 clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS) \
                 $(call map,to_bin_folder,$(BINARIES))
