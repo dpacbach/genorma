@@ -56,13 +56,25 @@ all: copy-bin
 
 .DEFAULT_GOAL = all
 
-# Build both debug and  release.  -s  means  "quiet" so that make
-# will not print e.g. "Entering directory...".
-both:
+# Build either debug or  release  specified  using make target in-
+# stead  of make variable. -s means "quiet" so that make will not
+# print  e.g.  "Entering  directory...". Note that if you run the
+# debug target with OPT set then it  will  be  a  release  target
+# which  defeats  the  purpose,  since  $(MAKE) will inherit that
+# variable.  Also be careful here with race conditions with the
+# .location file mechanism until that is fixed.
+debug:
 	@$(MAKE) -s all
+
+release:
 	@$(MAKE) -s all OPT=
 
-.PHONY: all build copy-bin both
+# This target, apart from building  both  debug and release, will
+# enable  building them both in parallel since they are specified
+# as separate targets.
+both: debug release
+
+.PHONY: all build copy-bin both debug release
 
 clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS) \
                 $(call map,to_bin_folder,$(BINARIES))
