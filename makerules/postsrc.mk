@@ -36,7 +36,7 @@ ifneq (undefined,$(origin no_top_bin_folder))
 endif
 
 $(bin_folder):
-	$(print_mkdir) mkdir $(bin_folder)
+	$(print_mkdir) mkdir -p $(bin_folder)
 
 to_bin_folder = $(bin_folder)/$(notdir $1)
 

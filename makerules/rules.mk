@@ -11,7 +11,7 @@
 # ===============================================================
 define _create_lib
     $(relCWD)$(lib_name):
-	    $$(print_mkdir) mkdir $$@
+	    $$(print_mkdir) mkdir -p $$@
 endef
 
 create_lib = $(eval $(call _create_lib))
