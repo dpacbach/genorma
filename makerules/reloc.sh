@@ -30,6 +30,6 @@ for f in $files; do
     }
     mv $f.tmp $f
     so_far=$(( so_far + 1 ))
-    progress "   \033[35mfixing\033[00m " 50 $so_far $count
+    progress "   \033[35mfixing\033[00m " 40 $so_far $count
 done
 echo
