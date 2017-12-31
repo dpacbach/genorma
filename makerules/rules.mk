@@ -202,16 +202,27 @@ define _ar
 
     OUT_PATH := $$(call into_lib,$(relCWD)$$(OUT_NAME))
 
-    # Note that in the rule below we are adding the project
-    # file as an explicit dependency so as to cause all files
-    # to be rebuilt if it changes (because usually changes to
-    # this file would change a compiler flag or add a dependency
-    # which would not otherwise trigger rebuilding.  We assume
-    # that this file ends in a .mk extension and then filter
-    # it out in the rule.
+    # Note  that in the rule below we are adding the project file
+    # as an explicit dependency so as to cause all  files  to  be
+    # rebuilt if it changes (because usually changes to this file
+    # would  change  a  compiler  flag  or add a dependency which
+    # would not otherwise trigger rebuilding. We assume that this
+    # file  ends in a .mk extension and then filter it out in the
+    # rule.
+    #
+    # In  archiving,  unlike  with  linking a dynamic library, we
+    # need  to  first delete the archive because object files cor-
+    # responding to deleted (or  renamed)  cpp files would linger
+    # in the archive and (potentially silently)  cause  conflicts
+    # later during linking. Unfortunately  it  seems  that the ar
+    # utility  does  not  have an option that says "remove all ob-
+    # ject files from the archive that  were not specified on the
+    # commandline." So if we want to  clean  them out, we need to
+    # fork a second process, and  so  then  simply  removing  the
+    # archive seems as good an approach as any.
     $$(OUT_PATH): $(project_files)
     $$(OUT_PATH): $$(NEW_OBJS) | $(relCWD)$(lib_name)
-	    $$(print_ar) $$(AR) $(ARFLAGS) $$@ $$(call keep_link_files,$$^)
+	    $$(print_ar) rm -f $$@ && $$(AR) $(ARFLAGS) $$@ $$(call keep_link_files,$$^)
 
 endef
 
