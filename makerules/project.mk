@@ -5,7 +5,7 @@ CFLAGS         += -MMD -MP -m64 -Wall -Wextra -pedantic
 CXXFLAGS       += $(CFLAGS)
 
 CFLAGS_DEBUG   += $(CXXFLAGS) -g -ggdb
-CFLAGS_RELEASE += $(CXXFLAGS) -Ofast
+CFLAGS_RELEASE += $(CXXFLAGS) -O3
 
 # Here  "not  specified" is defined as the `origin` of a variable
 # being either "undefined" or  "default".  The  ?= operator would
