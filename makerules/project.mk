@@ -1,11 +1,16 @@
 # ===============================================================
 # Default project settings
 # ===============================================================
-CFLAGS         += -MMD -MP -m64 -Wall -Wextra -pedantic
-CXXFLAGS       += $(CFLAGS)
+# In this module we set the base compiler flags that will be used
+# for  compiling  all C/C++ files. If a library needs specific ad-
+# ditions  to  these  flags  then they can specify them using the
+# <location>.cflags  or  <location>.cxxflags in the library's own
+# make file, where <location> is  the  location  name for that li-
+# brary.
+CFLAGS_BASE      := -MMD -MP -m64 -Wall -Wextra -pedantic
 
-CFLAGS_DEBUG   += $(CXXFLAGS) -g -ggdb
-CFLAGS_RELEASE += $(CXXFLAGS) -O3
+CFLAGS_DEBUG     := -g -ggdb
+CFLAGS_RELEASE   := -O3
 
 # Here  "not  specified" is defined as the `origin` of a variable
 # being either "undefined" or  "default".  The  ?= operator would
@@ -27,10 +32,17 @@ ifneq ($(OS),Windows)
 endif
 
 ifneq ($(origin OPT),undefined)
-    CXXFLAGS_TO_USE = $(CFLAGS_RELEASE)
+    CFLAGS += $(CFLAGS_BASE) $(CFLAGS_RELEASE)
 else
-    CXXFLAGS_TO_USE = $(CFLAGS_DEBUG)
+    CFLAGS += $(CFLAGS_BASE) $(CFLAGS_DEBUG)
 endif
+
+# For C++ compilation we will (on the compile  command  line)  al-
+# ready include the  C  flags,  so  CXXFLAGS  only includes those
+# C++-specific flags that we need over  and  above  the  C  flags.
+# Also, at the moment we  don't distinguish between debug/release
+# (this is assumed to be done only in the C flags).
+CXXFLAGS += # Allow user to add in their own on make cmd line.
 
 LDFLAGS     ?=
 LDFLAGS_LIB := -shared
