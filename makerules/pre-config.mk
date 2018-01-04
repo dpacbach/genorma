@@ -65,6 +65,9 @@ PRECOMP_NAME := precomp.hpp
 opt-suffix :=
 ifneq ($(origin OPT),undefined)
     opt-suffix := .opt
+    CFLAGS += -DNDEBUG
+else
+    CFLAGS += -DDEBUG
 endif
 
 # This is the name that will  be  used for all the binary folders
