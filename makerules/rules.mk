@@ -38,7 +38,9 @@ define _compile_srcs
     # be compiled to an object  file  with the extension .gch (on
     # top of existing extension).
     NEW_PRECOMP  := $(wildcard $(relCWD)$(PRECOMP_NAME))
-    INC_PRECOMP  := $$(if $$(NEW_PRECOMP),-Winvalid-pch -include $$(call into_lib,$$(NEW_PRECOMP)),)
+    # This variable needs  a  location-specific  name  because it
+    # won't be evaluated until inside a rule.
+    INC_PRECOMP_$(LOCATION) := $$(if $$(NEW_PRECOMP),-Winvalid-pch -include $$(call into_lib,$$(NEW_PRECOMP)),)
     PRECOMP_GCH  := $$(if $$(NEW_PRECOMP),$$(call into_lib,$$(NEW_PRECOMP).gch),)
 
     # It  is possible that the cpp sources may contain duplicates
@@ -110,7 +112,7 @@ define _compile_srcs
     # clude the pch header first.
     $$(NEW_OBJS_CPP): $(project_files) $$(PRECOMP_GCH)
     $$(NEW_OBJS_CPP): $(relCWD)$(lib_name)/%.o: $(relCWD)%.cpp | $(relCWD)$(lib_name)
-	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$(INC_PRECOMP) $$($1) $(CFLAGS) $(CXXFLAGS) $$($(LOCATION).cflags) $$($(LOCATION).cxxflags) -c $$< -o $$@
+	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$(INC_PRECOMP_$(LOCATION)) $$($1) $(CFLAGS) $(CXXFLAGS) $$($(LOCATION).cflags) $$($(LOCATION).cxxflags) -c $$< -o $$@
 
     # If we're doing PCH then create a target that builds it. Im-
     # portant:  this compile rule should be kept identical to the
