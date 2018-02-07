@@ -45,9 +45,6 @@ ifneq (,$(filter CYGWIN%,$(uname)))
     AR_EXT := a
     bin_platform = win64
     LDFLAGS += -static
-    ifdef CC
-        PATH := $(PATH):$(dir $(CC))
-    endif
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined
     #bison_no_deprecated = -Wno-deprecated

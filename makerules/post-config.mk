@@ -13,3 +13,9 @@ endif
 ifneq ($(origin STATIC_LIBGCC),undefined)
     LDFLAGS += -static-libgcc
 endif
+
+# If  on  Windows (and using MinGW) we have to add the bin folder
+# into the PATH variable to get it to work properly.
+ifeq ($(OS),Windows)
+    PATH := $(PATH):$(dir $(CC))
+endif
