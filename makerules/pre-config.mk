@@ -13,9 +13,20 @@ SHELL = /bin/bash
 uname := $(shell uname)
 valid_os = Darwin Linux CYGWIN*
 
+# This  tells the linker to only link in a library if symbols are
+# required from that library. Seems that some compilers  have  it
+# on by default, but not others.
+as-needed := -Wl,--as-needed
+
+# Libraries that we always link  in  by default because they will
+# usually always be needed. However, if they aren't, they will be
+# excluded by the above --as-needed flag.
+default-link := -lstdc++ -lm
+
 ifeq (Darwin,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
+    LDFLAGS += $(as-needed) $(default-link)
     ARFLAGS := ucrs
     SO_EXT := dylib
     AR_EXT := a
@@ -28,6 +39,7 @@ else
 ifeq (Linux,$(uname))
     OS := Linux
     CFLAGS += -DOS_LINUX
+    LDFLAGS += $(as-needed) $(default-link)
     ARFLAGS := Uucrs
     SO_EXT := so
     AR_EXT := a
@@ -40,6 +52,7 @@ else
 ifneq (,$(filter CYGWIN%,$(uname)))
     OS := Windows
     CFLAGS += -DOS_WIN
+    LDFLAGS += $(as-needed) $(default-link)
     ARFLAGS := Uucrs
     SO_EXT := dll
     AR_EXT := a
