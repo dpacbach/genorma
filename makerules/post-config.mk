@@ -7,11 +7,11 @@
 # cluded on the linker command line as $$(LDFLAGS).
 
 ifneq ($(origin STATIC_LIBSTDCXX),undefined)
-    LDFLAGS += -static-libstdc++
+    override LDFLAGS += -static-libstdc++
 endif
 
 ifneq ($(origin STATIC_LIBGCC),undefined)
-    LDFLAGS += -static-libgcc
+    override LDFLAGS += -static-libgcc
 endif
 
 # If  on  Windows (and using MinGW) we have to add the bin folder

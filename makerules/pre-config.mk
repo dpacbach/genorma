@@ -25,8 +25,8 @@ default-link := -lstdc++ -lm
 
 ifeq (Darwin,$(uname))
     OS := OSX
-    CFLAGS += -DOS_OSX
-    LDFLAGS += $(as-needed) $(default-link)
+    override CFLAGS += -DOS_OSX
+    override override LDFLAGS += $(as-needed) $(default-link)
     ARFLAGS := ucrs
     SO_EXT := dylib
     AR_EXT := a
@@ -38,8 +38,8 @@ ifeq (Darwin,$(uname))
 else
 ifeq (Linux,$(uname))
     OS := Linux
-    CFLAGS += -DOS_LINUX
-    LDFLAGS += $(as-needed) $(default-link)
+    override CFLAGS += -DOS_LINUX
+    override LDFLAGS += $(as-needed) $(default-link)
     ARFLAGS := Uucrs
     SO_EXT := so
     AR_EXT := a
@@ -51,13 +51,13 @@ ifeq (Linux,$(uname))
 else
 ifneq (,$(filter CYGWIN%,$(uname)))
     OS := Windows
-    CFLAGS += -DOS_WIN
-    LDFLAGS += $(as-needed) $(default-link)
+    override CFLAGS += -DOS_WIN
+    override LDFLAGS += $(as-needed) $(default-link)
     ARFLAGS := Uucrs
     SO_EXT := dll
     AR_EXT := a
     bin_platform = win64
-    LDFLAGS += -static
+    override LDFLAGS += -static
     soname_ld_option_prefix = -Wl,-soname,
     ld_no_undefined = -Wl,--no-undefined
     #bison_no_deprecated = -Wno-deprecated
@@ -75,9 +75,9 @@ PRECOMP_NAME := precomp.hpp
 opt-suffix :=
 ifneq ($(origin OPT),undefined)
     opt-suffix := .opt
-    CFLAGS += -DNDEBUG
+    override CFLAGS += -DNDEBUG
 else
-    CFLAGS += -DDEBUG
+    override CFLAGS += -DDEBUG
 endif
 
 # This is the name that will  be  used for all the binary folders

@@ -32,9 +32,9 @@ ifneq ($(OS),Windows)
 endif
 
 ifneq ($(origin OPT),undefined)
-    CFLAGS += $(CFLAGS_BASE) $(CFLAGS_RELEASE)
+    override CFLAGS += $(CFLAGS_BASE) $(CFLAGS_RELEASE)
 else
-    CFLAGS += $(CFLAGS_BASE) $(CFLAGS_DEBUG)
+    override CFLAGS += $(CFLAGS_BASE) $(CFLAGS_DEBUG)
 endif
 
 # For C++ compilation we will (on the compile  command  line)  al-
@@ -42,7 +42,7 @@ endif
 # C++-specific flags that we need over  and  above  the  C  flags.
 # Also, at the moment we  don't distinguish between debug/release
 # (this is assumed to be done only in the C flags).
-CXXFLAGS += # Allow user to add in their own on make cmd line.
+override CXXFLAGS += # Allow user to add in their own on cmd line.
 
 LDFLAGS     ?=
 LDFLAGS_LIB := -shared
