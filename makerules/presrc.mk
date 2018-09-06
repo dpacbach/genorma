@@ -22,7 +22,10 @@ enter_all = $(call map,enter,$1)
 # Load  all  the  modules in nr-make that can be loaded before we
 # load any project-specific config files  and traverse the source
 # tree. Note that these need to be in a certain order
+uname := $(shell uname)
+
 include $(CWD)gmsl/gmsl
+include $(CWD)clang.mk
 include $(CWD)pre-config.mk
 include $(CWD)utils.mk
 include $(CWD)printing.mk

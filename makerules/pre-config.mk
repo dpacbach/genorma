@@ -10,9 +10,6 @@
 
 SHELL = /bin/bash
 
-uname := $(shell uname)
-valid_os = Darwin Linux CYGWIN*
-
 # This  tells the linker to only link in a library if symbols are
 # required from that library. Seems that some compilers  have  it
 # on by default, but not others.
@@ -26,7 +23,7 @@ default-link := -lstdc++ -lm
 ifeq (Darwin,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
-    LDFLAGS += $(as-needed) $(default-link)
+    LDFLAGS += $(as-needed) $(ld-search-paths) $(default-link)
     ARFLAGS := ucrs
     SO_EXT := dylib
     AR_EXT := a
@@ -39,7 +36,7 @@ else
 ifeq (Linux,$(uname))
     OS := Linux
     CFLAGS += -DOS_LINUX
-    LDFLAGS += $(as-needed) $(default-link)
+    LDFLAGS += $(as-needed) $(ld-search-paths) $(default-link)
     ARFLAGS := Uucrs
     SO_EXT := so
     AR_EXT := a
@@ -52,7 +49,7 @@ else
 ifneq (,$(filter CYGWIN%,$(uname)))
     OS := Windows
     CFLAGS += -DOS_WIN
-    LDFLAGS += $(as-needed) $(default-link)
+    LDFLAGS += $(as-needed) $(ld-search-paths) $(default-link)
     ARFLAGS := Uucrs
     SO_EXT := dll
     AR_EXT := a
@@ -63,6 +60,7 @@ ifneq (,$(filter CYGWIN%,$(uname)))
     #bison_no_deprecated = -Wno-deprecated
     lib_prefix =
 else
+    valid_os = Darwin Linux CYGWIN*
     $(error supported OS unames must be one of: $(valid_os))
 endif
 endif
