@@ -93,7 +93,12 @@ clean: $$(addsuffix .clean,$$(wildcard $$(clean_targets)))
 %.clean:
 	$(print_remove) rm -f $*
 
-.PHONY: clean
+# -s tells make not to print "Entering/Leaving...".
+clean-both:
+	@$(MAKE) -s clean
+	@$(MAKE) -s clean OPT=
+
+.PHONY: clean clean-both
 
 # Given A/B/C.cpp this will return A/B/X/C.cpp, where  X  is  the
 # lib folder name, specific to the platform.

@@ -42,7 +42,7 @@ endif
 # C++-specific flags that we need over  and  above  the  C  flags.
 # Also, at the moment we  don't distinguish between debug/release
 # (this is assumed to be done only in the C flags).
-CXXFLAGS += # Allow user to add in their own on make cmd line.
+CXXFLAGS += # Allow user to add in their own on cmd line.
 
 LDFLAGS     ?=
 LDFLAGS_LIB := -shared
