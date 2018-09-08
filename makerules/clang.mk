@@ -13,13 +13,13 @@ ifdef CLANG
   # one on the system. Here, the user can specify that they want
   # clang to use the standard library (libstdc++) from a custom
   # build of gcc on the system.
-  ifdef USE_GCC_BUILD
-    # USE_GCC_BUILD should be the path to the folder whose name
+  ifdef CLANG_USE_LIBSTDCXX
+    # CLANG_USE_LIBSTDCXX should be the path to the folder whose name
 	# is the gcc version.
-    gcc-version  := $(patsubst gcc-%,%,$(notdir $(USE_GCC_BUILD)))
+    gcc-version  := $(patsubst gcc-%,%,$(notdir $(CLANG_USE_LIBSTDCXX)))
     gcc-version  := $(subst -,.,$(gcc-version))
-    gcc-inc-home := $(USE_GCC_BUILD)/include/c++/$(gcc-version)
-    gcc-lib-home := $(USE_GCC_BUILD)/lib64
+    gcc-inc-home := $(CLANG_USE_LIBSTDCXX)/include/c++/$(gcc-version)
+    gcc-lib-home := $(CLANG_USE_LIBSTDCXX)/lib64
 
     # There's an include folder within the gcc folder structure
     # with an architecture-dependent name. We must find it.
