@@ -3,7 +3,7 @@
 # specified clang as the compiler and, if so, define the variable
 # CLANG.
 
-ifneq ($(filter clang%,$(CC)),)
+ifneq ($(filter %clang,$(CC)),)
   CLANG := 1
 endif
 
