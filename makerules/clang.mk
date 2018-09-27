@@ -15,7 +15,7 @@ ifdef CLANG
   # build of gcc on the system.
   ifdef CLANG_USE_LIBSTDCXX
     # CLANG_USE_LIBSTDCXX should be the path to the folder whose name
-	# is the gcc version.
+    # is the gcc version.
     gcc-version  := $(patsubst gcc-%,%,$(notdir $(CLANG_USE_LIBSTDCXX)))
     gcc-version  := $(subst -,.,$(gcc-version))
     gcc-inc-home := $(CLANG_USE_LIBSTDCXX)/include/c++/$(gcc-version)
