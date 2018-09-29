@@ -54,8 +54,10 @@ bins_to_copy = $(filter-out %.$(AR_EXT),$(BINARIES))
 # RIES are at this point since the src tree hasn't been traversed
 # yet.
 copy-bin: $$(call map,to_bin_folder,$$(bins_to_copy))
-# Does everything.
-all: copy-bin
+# Does everything. The $(BINARIES) ensures that we build all
+# targets (including archives) and then the copy-bin ensures that
+# we copy the non-archives to their final location.
+all: $$(BINARIES) copy-bin
 
 .DEFAULT_GOAL = all
 
