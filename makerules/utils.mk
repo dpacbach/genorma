@@ -2,6 +2,14 @@
 # file
 
 # ===============================================================
+# Bools
+
+# This function takes a variable name as an argument and will
+# determine if it is defined.  If so it will return "true" (even
+# if the variable is empty); otherwise, false.
+is_def = $(if $(call seq,$(origin $1),undefined),false,true)
+
+# ===============================================================
 # Lists
 #
 # Simply apply a function to the reverse of a list, and  then  re-
@@ -168,7 +176,24 @@ keep_link_files = $(call keep_if,is_link_file,$1)
 
 # ===============================================================
 # Miscellaneous stuff
-#
+
+# Consolidate long runs of spaces into a single space.
+sed-compact := sed 's/ \+/ /g'
+print-def = echo "$1: $(call is_def,$1)";
+# These are boolean variables that are `true` if they are defined.
+def-check := STATIC_LIBSTDCXX CLANG CLANG_USE_LIBSTDCXX
+
+diag:
+	@echo "Commands"
+	@echo "-----------------------------------------------------"
+	@echo "Compile: $(CXX) $(TP_INCLUDES_EXTRA) $(CFLAGS) $(CXXFLAGS)" | $(sed-compact)
+	@echo " Linker: $(LD) $(ld_no_undefined) -Wl,-rpath,'\$$ORIGIN' $(TP_LINK_EXTRA) $(LDFLAGS)" | $(sed-compact)
+	@echo "Archive: $(AR) $(ARFLAGS)" | $(sed-compact)
+	@echo
+	@echo "Variables"
+	@echo "-----------------------------------------------------"
+	@$(call map,print-def,$(def-check))
+
 # Single quotes so that bash doesn't  try to expand any left-over
 # dollar signs
 print-%:
