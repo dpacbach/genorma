@@ -33,6 +33,7 @@ print_mkdir   = $(call print_rule, $(c_magenta)creating$(c_norm) $@)
 print_flex    = $(call print_rule,     $(c_yellow)flex$(c_norm) $<)
 print_bison   = $(call print_rule,    $(c_yellow)bison$(c_norm) $<)
 print_tidy    = $(call print_rule,     $(c_grey)tidy$(c_norm) $$<)
+print_cfmt    = $(call print_rule,$(c_blue)format$(c_norm) $$<)
 
 # A shell command to echo a  line  potentially  with  color.  The
 # space  is so that the function itself returns something so that

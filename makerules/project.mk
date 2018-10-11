@@ -25,6 +25,8 @@ $(call set_if_not_specified,CC,gcc)
 $(call set_if_not_specified,CXX,g++)
 $(call set_if_not_specified,LD,g++)
 $(call set_if_not_specified,AR,ar)
+$(call set_if_not_specified,CLANG_FORMAT,clang-format)
+$(call set_if_not_specified,CLANG_TIDY,clang-tidy)
 
 ifneq ($(OS),Windows)
     CFLAGS_LIB += -fPIC
