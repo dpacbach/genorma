@@ -32,6 +32,11 @@ define _compile_srcs
 
     NEW_C_SRCS   := $(wildcard $(relCWD)*.c)
     NEW_CPP_SRCS := $(wildcard $(relCWD)*.cpp) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP)
+    # Note that it is not guaranteed that all of these headers
+    # are actually included by the source files.  They are just
+    # the headers that are sitting in the current folder.
+    NEW_H_SRCS   := $(wildcard $(relCWD)*.h)
+    NEW_HPP_SRCS := $(wildcard $(relCWD)*.hpp)
 
     # If there is a header file in the folder  with  the  special
     # name then assume it will be a precompiled header which will
@@ -59,6 +64,8 @@ define _compile_srcs
     endif
 
     C_SRCS      := $(C_SRCS)  $$(NEW_C_SRCS) $$(NEW_CPP_SRCS)
+    H_SRCS      := $(H_SRCS)  $$(NEW_H_SRCS) $$(NEW_HPP_SRCS)
+    CH_SRCS     := $(CH_SRCS) $$(NEW_C_SRCS) $$(NEW_CPP_SRCS) $$(NEW_H_SRCS) $$(NEW_HPP_SRCS)
     YL_SRCS     := $(YL_SRCS) $$(NEW_L_SRCS_CPP) $$(NEW_Y_SRCS_CPP) $$(NEW_Y_SRCS_HPP)
     OBJS        := $(OBJS)    $$(NEW_OBJS_C) $$(NEW_OBJS_CPP)
     DEPS        := $(DEPS)    $$(NEW_DEPS)

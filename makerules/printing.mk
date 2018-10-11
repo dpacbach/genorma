@@ -7,6 +7,7 @@ c_yellow  := \033[33m
 c_blue    := \033[34m
 c_magenta := \033[35m
 c_cyan    := \033[36m
+c_grey    := \033[37m
 c_norm    := \033[00m
 
 # There needs to be a blank line after this.
@@ -31,6 +32,7 @@ print_copy_to = $(call print_rule,  $(c_magenta)copying$(c_norm) $< to $(1))
 print_mkdir   = $(call print_rule, $(c_magenta)creating$(c_norm) $@)
 print_flex    = $(call print_rule,     $(c_yellow)flex$(c_norm) $<)
 print_bison   = $(call print_rule,    $(c_yellow)bison$(c_norm) $<)
+print_tidy    = $(call print_rule,     $(c_grey)tidy$(c_norm) $$<)
 
 # A shell command to echo a  line  potentially  with  color.  The
 # space  is so that the function itself returns something so that

@@ -59,6 +59,9 @@ copy-bin: $$(call map,to_bin_folder,$$(bins_to_copy))
 # we copy the non-archives to their final location.
 all: $$(BINARIES) copy-bin
 
+# Build all and run clang-tidy on all.
+all-tidy: tidy all
+
 .DEFAULT_GOAL = all
 
 # Build either debug or  release  specified  using make target in-
@@ -79,7 +82,7 @@ release:
 # as separate targets.
 both: debug release
 
-.PHONY: all build copy-bin both debug release
+.PHONY: all all-tidy build copy-bin both debug release
 
 clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS) \
                 $(call map,to_bin_folder,$(BINARIES))

@@ -29,6 +29,30 @@ $(call assert_no_dup,$(call map,notdir,$(BINARIES)),$(bin_dup))
 include $(CWD)/info.mk
 
 # ===============================================================
+# clang-tidy
+
+clang-tidy-target-suffix := clang-tidy
+
+# Currently the target depends on the source file just for the
+# benefit of the printing code, so that it has access to the
+# source filename.
+define __clang_tidy_rule
+$1.$(clang-tidy-target-suffix): $1
+	$(print_tidy) clang-tidy $1
+endef
+
+# This function will create a rule to run clang-tidy on one
+# source file.
+clang-tidy-rule = $(eval $(call __clang_tidy_rule,$1))
+
+# Create a clang-tidy target for each source and header file.
+$(call map,clang-tidy-rule,$(CH_SRCS))
+
+tidy: $(addsuffix .$(clang-tidy-target-suffix),$(CH_SRCS))
+
+.PHONY: tidy
+
+# ===============================================================
 # Things having to do with bin/lib folders
 
 ifneq (undefined,$(origin no_top_bin_folder))
