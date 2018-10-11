@@ -1,3 +1,4 @@
+import argparse
 from os import uname
 from os.path import relpath, dirname, splitext, basename, join
 import subprocess as sp
@@ -81,9 +82,38 @@ def _make( path ):
 def FlagsForFile( filename, **kwargs ):
     return { 'flags': _make( filename ) }
 
+def generate_compile_flags_txt( cpp_src, output ):
+    with file( output, 'w' ) as f:
+      flags = FlagsForFile( cpp_src )['flags']
+      for f1,f2 in zip( flags, flags[1:] ):
+        if '-c' in (f1,f2) or '-o' in (f1,f2):
+          continue
+        print >>f, f2
+    # print 'Wrote output to', output
+
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(
+        description='Generate Compile Flags' )
+
+    parser.add_argument( '--compile-flags-txt',
+                         dest='compile_flags_txt',
+                         default=None,
+                         type=str,
+                         help='Emit compile_flags.txt at specified location' )
+    parser.add_argument( '--src-file',
+                         dest='src',
+                         required=True,
+                         type=str,
+                         help='The source file to use when running make' )
+    args = parser.parse_args()
+
+    if args.compile_flags_txt:
+      generate_compile_flags_txt( args.src, args.compile_flags_txt )
+      exit( 0 )
+
     print _run_cmd( '/usr/bin/make diag' )
-    flags = FlagsForFile( sys.argv[1] )['flags']
+    flags = FlagsForFile( args.src )['flags']
     print flags[0]
     for flag in flags[1:]:
         print ' ', flag

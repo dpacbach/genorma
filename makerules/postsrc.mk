@@ -33,11 +33,19 @@ include $(CWD)/info.mk
 
 clang-tidy-target-suffix := clang-tidy
 
+# Clang tidy will look here for compile flags.
+compile_flags_txt := $(root)compile_flags.txt
+
+# This python file is expected to be a symlink to the one in the
+# nr-make repo.
+$(compile_flags_txt):
+	python $(root).ycm_extra_conf.py --src-file=$(firstword $(C_SRCS)) --compile-flags-txt=$@
+
 # Currently the target depends on the source file just for the
 # benefit of the printing code, so that it has access to the
 # source filename.
 define __clang_tidy_rule
-$1.$(clang-tidy-target-suffix): $1 $(root)compile_flags.txt
+$1.$(clang-tidy-target-suffix): $1 $(compile_flags_txt)
 	$(print_tidy) $(CLANG_TIDY) $1
 endef
 
