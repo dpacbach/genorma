@@ -33,6 +33,10 @@ include $(CWD)/info.mk
 
 clang-tidy-target-suffix := clang-tidy
 
+# For example:
+#   A/B/C.cpp ==> A/B/.lib-linux64/C.cpp.clang-tidy
+clang-tidy-marker = $(call into_lib,$1.$(clang-tidy-target-suffix))
+
 # Clang tidy will look here for compile flags.
 compile_flags_txt := $(root)compile_flags.txt
 
@@ -41,12 +45,22 @@ compile_flags_txt := $(root)compile_flags.txt
 $(compile_flags_txt):
 	python $(root).ycm_extra_conf.py --src-file=$(firstword $(C_SRCS)) --compile-flags-txt=$@
 
-# Currently the target depends on the source file just for the
-# benefit of the printing code, so that it has access to the
-# source filename.
+# Currently the target depends on the source file so that it will
+# be re-tidy'd when the source file is modified. But note that
+# this may not be completely sufficient because it is likely
+# that, in general, a cpp file will have to be re-tidy'd when a
+# header file that it includes is modified. The below target is
+# not smart enough to track those dependencies, but it should
+# probably be sufficient in practice. Also note that the rule
+# touches a marker file (the target) to only re-tidy when needed
+# -- since the process is as slow as compilation we cannot afford
+# to run this on every file if not needed.
 define __clang_tidy_rule
-$1.$(clang-tidy-target-suffix): $1 $(compile_flags_txt)
-	$(print_tidy) $(CLANG_TIDY) $1
+CLANG_TIDY_MARKERS := $(CLANG_TIDY_MARKERS) \
+                      $(call clang-tidy-marker,$1)
+$(call clang-tidy-marker,$1): $1 $(compile_flags_txt)
+	$(print_tidy) $(CLANG_TIDY) -quiet $1
+	@touch $$@
 endef
 
 # This function will create a rule to run clang-tidy on one
@@ -56,7 +70,7 @@ clang-tidy-rule = $(eval $(call __clang_tidy_rule,$1))
 # Create a clang-tidy target for each source and header file.
 $(call map,clang-tidy-rule,$(CH_SRCS))
 
-tidy: $(addsuffix .$(clang-tidy-target-suffix),$(CH_SRCS))
+tidy: $(call map,clang-tidy-marker,$(CH_SRCS))
 
 .PHONY: tidy
 

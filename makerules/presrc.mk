@@ -85,7 +85,8 @@ both: debug release
 .PHONY: all all-tidy build copy-bin both debug release
 
 clean_targets = $(OBJS) $(BINARIES) $(DEPS) $(YL_SRCS) $(GCHS) \
-                $(call map,to_bin_folder,$(BINARIES))
+                $(call map,to_bin_folder,$(BINARIES)) \
+                $(CLANG_TIDY_MARKERS)
 
 # Use secondary expansion for the dependencies  here  because  we
 # won't yet know the contents of  clean_targets  at  this  point.
