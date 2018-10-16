@@ -55,11 +55,17 @@ $(compile_flags_txt):
 # touches a marker file (the target) to only re-tidy when needed
 # -- since the process is as slow as compilation we cannot afford
 # to run this on every file if not needed.
+#
+# The redirection of stderr to /dev/null is not ideal, but it is
+# to suppress the "xxx warnings generated" output from clang tidy
+# which the -quiet flag does not suppress for some reason. Any
+# exceptions that clang-tidy finds (warnings/errors) will be
+# output to stdout it seems, so we still get the colored output.
 define __clang_tidy_rule
 CLANG_TIDY_MARKERS := $(CLANG_TIDY_MARKERS) \
                       $(call clang-tidy-marker,$1)
 $(call clang-tidy-marker,$1): $1 $(compile_flags_txt)
-	$(print_tidy) $(CLANG_TIDY) -quiet $1
+	$(print_tidy) $(CLANG_TIDY) -quiet $1 2>/dev/null
 	@touch $$@
 endef
 
