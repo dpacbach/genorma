@@ -56,6 +56,15 @@ $(compile_flags_txt):
 # -- since the process is as slow as compilation we cannot afford
 # to run this on every file if not needed.
 #
+# The rule also depends on a .clang-tidy file at the root. Note
+# that this is just an approximation at best, and plain wrong at
+# worst. More specifically, this will only work when the source
+# tree is has just a single .clang-tidy file at the root that
+# contains the rules for all source files, as opposed to other
+# .clang-tidy files scattered throughout (which would override
+# the one at the root). If there is no such file then it
+# shouldn't cause any issues.
+#
 # The redirection of stderr to /dev/null is not ideal, but it is
 # to suppress the "xxx warnings generated" output from clang tidy
 # which the -quiet flag does not suppress for some reason. Any
@@ -64,7 +73,7 @@ $(compile_flags_txt):
 define __clang_tidy_rule
 CLANG_TIDY_MARKERS := $(CLANG_TIDY_MARKERS) \
                       $(call clang-tidy-marker,$1)
-$(call clang-tidy-marker,$1): $1 $(compile_flags_txt)
+$(call clang-tidy-marker,$1): $1 $(compile_flags_txt) $(wildcard $(root).clang-tidy)
 	$(print_tidy) $(CLANG_TIDY) -quiet $1 2>/dev/null
 	@touch $$@
 endef
