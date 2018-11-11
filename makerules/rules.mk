@@ -111,7 +111,7 @@ define _compile_srcs
     # rule.
     $$(NEW_OBJS_C): $(project_files)
     $$(NEW_OBJS_C): $(relCWD)$(lib_name)/%.o: $(relCWD)%.c | $(relCWD)$(lib_name)
-	    $$(print_compile) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CFLAGS) $$($(LOCATION).cflags) -c $$< -o $$@
+	    $$(print_compile) $$(CCACHE) $$(CC) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$($1) $(CFLAGS) $$($(LOCATION).cflags) -c $$< -o $$@
 
     # Note that we only support PCH for C++, and so we  have  the
     # dependency  on the .gch file and also a -include flag given
@@ -119,7 +119,7 @@ define _compile_srcs
     # clude the pch header first.
     $$(NEW_OBJS_CPP): $(project_files) $$(PRECOMP_GCH)
     $$(NEW_OBJS_CPP): $(relCWD)$(lib_name)/%.o: $(relCWD)%.cpp | $(relCWD)$(lib_name)
-	    $$(print_compile) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$(INC_PRECOMP_$(LOCATION)) $$($1) $(CFLAGS) $(CXXFLAGS) $$($(LOCATION).cflags) $$($(LOCATION).cxxflags) -c $$< -o $$@
+	    $$(print_compile) $$(CCACHE) $$(CXX) $(TP_INCLUDES_$(LOCATION)) $(TP_INCLUDES_EXTRA) $(call include_flags,$(LOCATION)) $$(INC_PRECOMP_$(LOCATION)) $$($1) $(CFLAGS) $(CXXFLAGS) $$($(LOCATION).cflags) $$($(LOCATION).cxxflags) -c $$< -o $$@
 
     # If we're doing PCH then create a target that builds it. Im-
     # portant:  this compile rule should be kept identical to the

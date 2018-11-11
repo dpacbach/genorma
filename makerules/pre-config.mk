@@ -20,6 +20,18 @@ as-needed := -Wl,--as-needed
 # excluded by the above --as-needed flag.
 default-link := -lstdc++ -lm
 
+# ccache: will be automatically used if the user hasn't turned
+# it off.  If used, we allow the user to specify the location of
+# the binary, otherwise whatever is in the PATH is used.  If a
+# search through PATH is done but yields no results then the
+# CCACHE variable will remain empty which will simply disable
+# the feature (will not cause problems).
+ifeq ($(origin NO_CCACHE),undefined)
+    CCACHE := $(if $(CCACHE_BINARY),      \
+                   $(CCACHE_BINARY),      \
+                   $(shell which ccache))
+endif
+
 ifeq (Darwin,$(uname))
     OS := OSX
     CFLAGS += -DOS_OSX
