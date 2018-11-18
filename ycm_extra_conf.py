@@ -19,7 +19,8 @@ LIB_DIR  = '.lib-linux64' if isLinux() else '.lib-osx'
 def _run_cmd( cmd ):
     p = sp.Popen( cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True )
     (stdout, stderr) = p.communicate()
-    assert p.returncode == 0, 'error:\n%s' % stderr
+    assert p.returncode == 0, \
+          'error running: %s\nerror: %s' % (cmd,stderr)
     return stdout
 
 # Normally when calling a compiler it has a set of built-in
@@ -70,8 +71,9 @@ def _make( path ):
     (line,) = [l for l in stdout.split( '\n' ) if target in l]
     words = line.split()
 
-    # words[0] is assumed to contain the compiler binary.
-    isystems = find_system_include_paths( words[0] )
+    # words[0] or [1] is assumed to contain the compiler binary.
+    compiler_binary = words[0] if 'ccache' not in words[0] else words[1]
+    isystems = find_system_include_paths( compiler_binary )
     if isystems:
         # There MUST NOT be a space between -isystem and the
         # path, otherwise it will be silently ignored!
